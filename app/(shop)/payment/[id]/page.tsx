@@ -81,7 +81,7 @@ export default function PaymentPage() {
       const json = await res.json();
       if (json.success) {
         toast.success("Payment submitted! Pending admin approval.");
-        router.push("/dashboard/purchases");
+        router.push(`/success?purchaseId=${params.id}`);
       } else {
         toast.error(json.message);
       }

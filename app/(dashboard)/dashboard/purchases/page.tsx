@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Eye, Download, FileText, ShoppingBag } from "lucide-react";
+import { Eye, Download, FileText, ShoppingBag, Music, Film, Image, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,16 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatPrice } from "@/lib/utils";
+
+const contentTypeIcons: Record<string, any> = {
+  IMAGE: Image,
+  VIDEO: Film,
+  MOVIE: Film,
+  AUDIO: Music,
+  PDF: FileText,
+  EBOOK: FileText,
+  DOCUMENT: FileText,
+};
 
 export default function PurchasesPage() {
   const [purchases, setPurchases] = useState<any[]>([]);
@@ -43,7 +53,7 @@ export default function PurchasesPage() {
                 <TableHead>Purchase Date</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Payment Method</TableHead>
+                <TableHead>Payment</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -69,73 +79,83 @@ export default function PurchasesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                purchases.map((purchase: any) => (
-                  <TableRow key={purchase.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center">
-                          {purchase.items?.[0]?.content?.thumbnail ? (
-                            <img
-                              src={purchase.items[0].content.thumbnail}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <FileText className="h-5 w-5 text-zinc-400" />
+                purchases.map((purchase: any) => {
+                  const content = purchase.items?.[0]?.content;
+                  const TypeIcon = contentTypeIcons[content?.contentType] || FileText;
+                  const isApproved = purchase.paymentStatus === "APPROVED";
+
+                  return (
+                    <TableRow key={purchase.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+                            {content?.thumbnail ? (
+                              <img
+                                src={content.thumbnail}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <TypeIcon className="h-5 w-5 text-zinc-400" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-medium block truncate">
+                              {content?.title || "Unknown"}
+                            </span>
+                            <span className="text-xs text-zinc-400 capitalize">
+                              {content?.contentType?.toLowerCase() || "—"}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-zinc-500 whitespace-nowrap">
+                        {formatDate(purchase.createdAt)}
+                      </TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {formatPrice(purchase.finalAmount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            isApproved
+                              ? "success"
+                              : purchase.paymentStatus === "PENDING"
+                              ? "warning"
+                              : "destructive"
+                          }
+                        >
+                          {isApproved ? "Active" : purchase.paymentStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-zinc-500 text-sm">
+                        {purchase.paymentMethod}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          {isApproved && content && (
+                            <>
+                              <Link href={`/success?purchaseId=${purchase.id}`}>
+                                <Button variant="default" size="sm" className="gap-1.5 h-8">
+                                  <Eye className="h-3.5 w-3.5" />
+                                  View Content
+                                </Button>
+                              </Link>
+                            </>
+                          )}
+                          {!isApproved && purchase.paymentStatus === "PENDING" && (
+                            <Link href={`/payment/${purchase.id}`}>
+                              <Button variant="outline" size="sm" className="gap-1.5 h-8">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                                Complete Payment
+                              </Button>
+                            </Link>
                           )}
                         </div>
-                        <span className="font-medium">
-                          {purchase.items?.[0]?.content?.title || "Unknown"}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-zinc-500">
-                      {formatDate(purchase.createdAt)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {formatPrice(purchase.finalAmount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          purchase.paymentStatus === "APPROVED"
-                            ? "success"
-                            : purchase.paymentStatus === "PENDING"
-                            ? "warning"
-                            : "destructive"
-                        }
-                      >
-                        {purchase.paymentStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-zinc-500 text-sm">
-                      {purchase.paymentMethod}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {purchase.paymentStatus === "APPROVED" && (
-                          <>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                              <Link href={`/content/${purchase.items?.[0]?.content?.slug}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                        {purchase.invoice && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                            <Link href={`/dashboard/invoices/${purchase.invoice.id}`}>
-                              <FileText className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

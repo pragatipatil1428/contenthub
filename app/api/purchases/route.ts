@@ -29,16 +29,29 @@ export async function GET(request: NextRequest) {
         include: {
           items: {
             include: {
-              content: {
+          content: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              thumbnail: true,
+              contentType: true,
+              priceType: true,
+              description: true,
+              files: {
                 select: {
                   id: true,
-                  title: true,
-                  slug: true,
-                  thumbnail: true,
-                  contentType: true,
-                  priceType: true,
+                  filename: true,
+                  url: true,
+                  size: true,
+                  mimeType: true,
+                  type: true,
                 },
+                orderBy: { order: "asc" },
               },
+              features: true,
+            },
+          },
             },
           },
           invoice: true,

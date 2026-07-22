@@ -55,8 +55,8 @@ export default function ContentDetailPage() {
 
       if (json.success) {
         if (content.priceType === "FREE") {
-          toast.success("Content unlocked! You can now download it.");
-          router.push(`/dashboard/purchases`);
+          toast.success("Content unlocked!");
+          router.push(`/success?purchaseId=${json.data.id}`);
         } else {
           // Redirect to payment page
           router.push(`/payment/${json.data.id}`);
