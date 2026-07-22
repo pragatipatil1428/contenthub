@@ -1,0 +1,486 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContentType {
+  IMAGE
+  VIDEO
+  MOVIE
+  AUDIO
+  PDF
+  COURSE
+  EBOOK
+  SOFTWARE
+  TEMPLATE
+  DOCUMENT
+  EXTERNAL_LINK
+  MIXED_FILES
+  WORD
+  EXCEL
+  ZIP
+  POWERPOINT
+  TEXT_ARTICLE
+}
+
+enum ContentStatus {
+  PUBLISHED
+  DRAFT
+  HIDDEN
+}
+
+enum PriceType {
+  FREE
+  PAID
+  COMING_SOON
+  HIDDEN
+}
+
+enum PaymentMethod {
+  QR_CODE
+  RAZORPAY
+  STRIPE
+  CASHFREE
+  PHONEPE
+  UPI
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+  FAILED
+  SUCCESS
+}
+
+enum NotificationType {
+  NEW_PURCHASE
+  NEW_USER
+  PAYMENT_PENDING
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  PURCHASE_SUCCESS
+  PURCHASE_PENDING
+  PURCHASE_APPROVED
+  PURCHASE_REJECTED
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+  phone          String?
+  image          String?
+  isOwnerAdmin   Boolean  @default(false)
+  emailVerified  Boolean  @default(false)
+  isBlocked      Boolean  @default(false)
+  isPremium      Boolean  @default(false)
+  rememberMe     Boolean  @default(false)
+  lastLoginAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  purchases         Purchase[]
+  purchasesItems    PurchaseItem[]
+  qrPayments        QRPayment[]
+  reviews           Review[]
+  bookmarks         Bookmark[]
+  wishlists         Wishlist[]
+  downloads         Download[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  loginHistory      LoginHistory[]
+  paymentScreenshots PaymentScreenshot[]
+
+  @@map("users")
+}
+
+model LoginHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  ip        String?
+  userAgent String?
+  loggedInAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("login_history")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?
+  banner      String?
+  seoTitle    String?
+  seoDesc     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subCategories SubCategory[]
+  contents      Content[]
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  icon        String?
+  isActive    Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  contents Content[]
+
+  @@unique([slug, categoryId])
+  @@map("sub_categories")
+}
+
+model Tag {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  slug    String   @unique
+  content Content[] @relation("ContentTags")
+
+  @@map("tags")
+}
+
+model Content {
+  id            String        @id @default(cuid())
+  title         String
+  subtitle      String?
+  slug          String        @unique
+  description   String?
+  richText      String?
+  thumbnail     String?
+  previewImage  String?
+  previewVideo  String?
+  previewAudio  String?
+  demoPdf       String?
+  contentType   ContentType   @default(IMAGE)
+  status        ContentStatus @default(DRAFT)
+  priceType     PriceType     @default(FREE)
+  originalPrice Float?
+  discountPrice Float?
+  offerPercent  Int?
+  tax           Float?
+  currency      String        @default("INR")
+  fileSize      Float?
+  fileUrl       String?
+  duration      Int?
+  language      String?
+  author        String?
+  releaseDate   DateTime?
+  version       String?
+  isFeatured    Boolean       @default(false)
+  isTrending    Boolean       @default(false)
+  isPopular     Boolean       @default(false)
+  isNewArrival  Boolean       @default(false)
+  isRecommended Boolean       @default(false)
+  rating        Float         @default(0)
+  views         Int           @default(0)
+  downloads     Int           @default(0)
+  purchaseCount Int           @default(0)
+  categoryId    String?
+  subCategoryId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  subCategory SubCategory? @relation(fields: [subCategoryId], references: [id], onDelete: SetNull)
+  tags        Tag[]        @relation("ContentTags")
+  files       ContentFile[]
+  screenshots ContentScreenshot[]
+  features    ContentFeature[]
+  requirements ContentRequirement[]
+  purchases   PurchaseItem[]
+  reviews     Review[]
+  bookmarks   Bookmark[]
+  wishlists   Wishlist[]
+  downloadRecords   Download[]
+
+  @@index([slug])
+  @@index([contentType])
+  @@index([priceType])
+  @@index([status])
+  @@index([categoryId])
+  @@index([isFeatured, isTrending, isPopular])
+  @@map("contents")
+}
+
+model ContentFile {
+  id        String @id @default(cuid())
+  contentId String
+  filename  String
+  url       String
+  size      Float?
+  mimeType  String?
+  type      String? // preview, main, thumbnail
+  order     Int    @default(0)
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("content_files")
+}
+
+model ContentScreenshot {
+  id        String @id @default(cuid())
+  contentId String
+  url       String
+  caption   String?
+  order     Int    @default(0)
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("content_screenshots")
+}
+
+model ContentFeature {
+  id        String @id @default(cuid())
+  contentId String
+  title     String
+  value     String?
+  order     Int    @default(0)
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("content_features")
+}
+
+model ContentRequirement {
+  id        String @id @default(cuid())
+  contentId String
+  title     String
+  order     Int    @default(0)
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@map("content_requirements")
+}
+
+model Purchase {
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique
+  userId        String
+  totalAmount   Float
+  tax           Float         @default(0)
+  discount      Float         @default(0)
+  finalAmount   Float
+  currency      String        @default("INR")
+  paymentMethod PaymentMethod @default(QR_CODE)
+  paymentStatus PaymentStatus @default(PENDING)
+  status        String        @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  paymentId     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id])
+  items   PurchaseItem[]
+  invoice Invoice?
+  qrPayment QRPayment?
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([paymentStatus])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id        String   @id @default(cuid())
+  purchaseId String
+  contentId String
+  userId    String
+  price     Float    @default(0)
+  createdAt DateTime @default(now())
+
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  content  Content  @relation(fields: [contentId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([purchaseId, contentId])
+  @@map("purchase_items")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  purchaseId    String        @unique
+  userId        String
+  amount        Float
+  currency      String        @default("INR")
+  paymentMethod PaymentMethod @default(QR_CODE)
+  paymentStatus PaymentStatus @default(PENDING)
+  transactionId String?
+  gatewayResponse Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model QRPayment {
+  id              String        @id @default(cuid())
+  purchaseId      String        @unique
+  userId          String
+  amount          Float
+  qrImage         String?
+  upiId           String
+  receiverName    String?
+  instructions    String?
+  transactionId   String?
+  paymentNote     String?
+  status          PaymentStatus @default(PENDING)
+  adminNote       String?
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  purchase       Purchase          @relation(fields: [purchaseId], references: [id])
+  user           User              @relation(fields: [userId], references: [id])
+  screenshots    PaymentScreenshot[]
+
+  @@map("qr_payments")
+}
+
+model PaymentScreenshot {
+  id          String   @id @default(cuid())
+  qrPaymentId String
+  userId      String
+  url         String
+  createdAt   DateTime @default(now())
+
+  qrPayment QRPayment @relation(fields: [qrPaymentId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("payment_screenshots")
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  invoiceNo   String   @unique
+  purchaseId  String   @unique
+  userId      String
+  amount      Float
+  tax         Float    @default(0)
+  total       Float
+  status      String   @default("PAID")
+  pdfUrl      String?
+  createdAt   DateTime @default(now())
+
+  purchase Purchase @relation(fields: [purchaseId], references: [id])
+
+  @@map("invoices")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  contentId String
+  userId    String
+  rating    Int
+  comment   String?
+  isApproved Boolean @default(true)
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([contentId, userId])
+  @@map("reviews")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  contentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([contentId, userId])
+  @@map("bookmarks")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  contentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([contentId, userId])
+  @@map("wishlists")
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  contentId String
+  userId    String
+  isFree    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@map("downloads")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String?
+  title      String
+  message    String
+  type       NotificationType @default(NEW_PURCHASE)
+  isRead     Boolean          @default(false)
+  link       String?
+  createdAt  DateTime         @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string") // string, number, boolean, json
+
+  @@map("settings")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  details   String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@map("activity_logs")
+}
