@@ -157,9 +157,20 @@ function ContentsPageContent() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Browse Content</h1>
+        <h1 className="text-3xl font-bold">
+          {typeFilter !== "ALL" ? (
+            <span className="flex items-center gap-3">
+              {contentTypeLabels[typeFilter] || typeFilter}
+              <Badge variant="secondary" className="text-sm font-normal">{filtered.length} items</Badge>
+            </span>
+          ) : (
+            "Browse Content"
+          )}
+        </h1>
         <p className="text-zinc-500 dark:text-zinc-400 mt-2">
-          Discover premium digital content curated for you
+          {typeFilter !== "ALL"
+            ? `Browse all ${(contentTypeLabels[typeFilter] || typeFilter).toLowerCase()} available in our marketplace`
+            : "Discover premium digital content curated for you"}
         </p>
       </div>
 

@@ -26,14 +26,13 @@ export async function GET(
           },
           orderBy: { createdAt: "desc" },
         },
-        _count: {
-          select: {
-            reviews: true,
-            downloads: true,
-            wishlists: true,
-            bookmarks: true,
-          },
-        },
+    _count: {
+      select: {
+        reviews: true,
+        wishlists: true,
+        bookmarks: true,
+      },
+    },
       },
     });
 

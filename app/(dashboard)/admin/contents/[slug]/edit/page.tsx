@@ -169,6 +169,29 @@ export default function EditContentPage() {
     }
   };
 
+  // Content type -> accepted file formats mapping
+  const contentTypeAcceptMap: Record<string, { accept: string; hint: string }> = {
+    AUDIO: { accept: ".mp3,.wav,.flac,.aac,.ogg,.wma,.m4a,.opus", hint: "MP3, WAV, FLAC, AAC, OGG" },
+    VIDEO: { accept: ".mp4,.avi,.mov,.mkv,.wmv,.webm,.flv", hint: "MP4, AVI, MOV, MKV, WEBM" },
+    MOVIE: { accept: ".mp4,.mkv,.avi,.webm", hint: "MP4, MKV, AVI, WEBM" },
+    IMAGE: { accept: ".jpg,.jpeg,.png,.webp,.gif,.svg,.bmp,.tiff", hint: "JPG, PNG, WEBP, GIF, SVG" },
+    PDF: { accept: ".pdf", hint: "PDF" },
+    EBOOK: { accept: ".pdf,.epub,.mobi,.azw3", hint: "PDF, EPUB, MOBI" },
+    DOCUMENT: { accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt", hint: "PDF, DOC, XLS, PPT, TXT" },
+    WORD: { accept: ".doc,.docx", hint: "DOC, DOCX" },
+    EXCEL: { accept: ".xls,.xlsx,.csv", hint: "XLS, XLSX, CSV" },
+    POWERPOINT: { accept: ".ppt,.pptx", hint: "PPT, PPTX" },
+    ZIP: { accept: ".zip,.rar,.7z,.tar,.gz", hint: "ZIP, RAR, 7Z, TAR" },
+    SOFTWARE: { accept: ".exe,.msi,.dmg,.apk,.deb,.rpm", hint: "EXE, MSI, DMG, APK" },
+    TEMPLATE: { accept: ".zip,.rar,.tar.gz", hint: "ZIP, RAR (template files)" },
+    COURSE: { accept: ".mp4,.pdf,.zip,.mp3", hint: "MP4, PDF, ZIP, MP3" },
+    MIXED_FILES: { accept: "", hint: "Any file type" },
+    EXTERNAL_LINK: { accept: "", hint: "External links don't need file uploads" },
+    TEXT_ARTICLE: { accept: ".txt,.md,.html,.pdf", hint: "TXT, MD, HTML, PDF" },
+  };
+
+  const currentFileConfig = contentTypeAcceptMap[watchContentType] || { accept: "", hint: "Any file type" };
+
   const getFileIcon = (mimeType?: string) => {
     if (!mimeType) return <File className="h-5 w-5" />;
     if (mimeType.startsWith("audio")) return <Music className="h-5 w-5 text-purple-500" />;
@@ -894,6 +917,7 @@ export default function EditContentPage() {
                     <input
                       type="file"
                       className="hidden"
+                      accept={currentFileConfig.accept}
                       onChange={handleFileUpload}
                       disabled={uploadingFile}
                     />
@@ -918,13 +942,27 @@ export default function EditContentPage() {
                 </div>
               </div>
 
+              {/* Accepted formats hint */}
+              {currentFileConfig.hint && (
+                <p className="text-xs text-zinc-400">
+                  Accepted formats: <span className="font-medium text-zinc-500">{currentFileConfig.hint}</span>
+                  {" "}· Max 50MB per file
+                </p>
+              )}
+
               {/* File List */}
               {contentFiles.length === 0 ? (
                 <div className="rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 p-8 text-center">
-                  <Upload className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                  {watchContentType === "AUDIO" ? (
+                    <Music className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                  ) : watchContentType === "VIDEO" || watchContentType === "MOVIE" ? (
+                    <Film className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                  ) : (
+                    <Upload className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                  )}
                   <p className="mt-2 text-sm text-zinc-500">No files uploaded yet</p>
                   <p className="text-xs text-zinc-400">
-                    Click &quot;Upload File&quot; to add content files (up to 50MB each)
+                    Upload {watchContentType === "AUDIO" ? "audio" : watchContentType === "VIDEO" || watchContentType === "MOVIE" ? "video" : "content"} files ({currentFileConfig.hint.toLowerCase()})
                   </p>
                 </div>
               ) : (
