@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 const protectedPaths = ["/dashboard", "/admin", "/profile", "/settings", "/payment"];
 const adminPaths = ["/admin"];
-const authPaths = ["/login"];
+const authPaths = ["/login", "/signup"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

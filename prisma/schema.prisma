@@ -233,6 +233,7 @@ model ContentFile {
   mimeType  String?
   type      String? // preview, main, thumbnail
   order     Int    @default(0)
+  fileData  Bytes? // Binary file data stored in database
 
   content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
 

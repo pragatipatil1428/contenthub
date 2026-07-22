@@ -28,8 +28,8 @@ interface ChartData {
 }
 
 const statCards = [
-  { key: "totalRevenue", label: "Total Revenue", icon: DollarSign, color: "from-emerald-500 to-teal-500", prefix: "₹" },
-  { key: "todayRevenue", label: "Today's Revenue", icon: TrendingUp, color: "from-blue-500 to-cyan-500", prefix: "₹" },
+  { key: "totalRevenue", label: "Total Revenue", icon: DollarSign, color: "from-emerald-500 to-teal-500", prefix: "" },
+  { key: "todayRevenue", label: "Today's Revenue", icon: TrendingUp, color: "from-blue-500 to-cyan-500", prefix: "" },
   { key: "totalPurchases", label: "Total Purchases", icon: ShoppingCart, color: "from-violet-500 to-purple-500" },
   { key: "totalUsers", label: "Total Users", icon: Users, color: "from-amber-500 to-orange-500" },
   { key: "totalContent", label: "Total Content", icon: Download, color: "from-rose-500 to-pink-500" },

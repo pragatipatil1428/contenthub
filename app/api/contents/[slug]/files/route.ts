@@ -1,19 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, handleAuthError } from "@/lib/auth";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
-
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-
-async function ensureUploadDir() {
-  try {
-    await mkdir(UPLOAD_DIR, { recursive: true });
-  } catch {
-    // Directory already exists
-  }
-}
 
 export async function GET(
   request: NextRequest,
@@ -37,6 +24,17 @@ export async function GET(
     const files = await prisma.contentFile.findMany({
       where: { contentId: content.id },
       orderBy: { order: "asc" },
+      select: {
+        id: true,
+        contentId: true,
+        filename: true,
+        url: true,
+        size: true,
+        mimeType: true,
+        type: true,
+        order: true,
+        // NOTE: fileData is NOT selected here - it's only fetched on explicit download
+      },
     });
 
     return NextResponse.json({ success: true, data: files });
@@ -91,18 +89,6 @@ export async function POST(
       );
     }
 
-    await ensureUploadDir();
-
-    // Generate unique filename
-    const ext = file.name.split(".").pop() || "";
-    const uniqueName = `${uuidv4()}.${ext}`;
-    const filePath = path.join(UPLOAD_DIR, uniqueName);
-    const publicUrl = `/uploads/${uniqueName}`;
-
-    // Save file
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
-
     // Get the max order for this content
     const maxOrder = await prisma.contentFile.aggregate({
       where: { contentId: content.id },
@@ -110,20 +96,45 @@ export async function POST(
     });
     const nextOrder = (maxOrder._max.order ?? -1) + 1;
 
-    // Create database record
+    // Read file buffer
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Create database record with file data stored in DB
     const contentFile = await prisma.contentFile.create({
       data: {
         contentId: content.id,
         filename: file.name,
-        url: publicUrl,
+        url: "pending", // Will be updated with actual file ID
         size: file.size,
         mimeType: file.type || "application/octet-stream",
         type: fileType,
         order: fileOrder || nextOrder,
+        fileData: buffer, // Store binary data in database
       },
     });
 
-    return NextResponse.json({ success: true, data: contentFile }, { status: 201 });
+    // Update URL with the actual file ID
+    const finalFile = await prisma.contentFile.update({
+      where: { id: contentFile.id },
+      data: { url: `/api/files/${contentFile.id}/download` },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: finalFile.id,
+          contentId: finalFile.contentId,
+          filename: finalFile.filename,
+          url: finalFile.url,
+          size: finalFile.size,
+          mimeType: finalFile.mimeType,
+          type: finalFile.type,
+          order: finalFile.order,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     const authError = handleAuthError(error);
     if (authError) {
@@ -178,16 +189,8 @@ export async function DELETE(
       );
     }
 
-    // Delete from database
+    // Delete from database (fileData is also removed automatically)
     await prisma.contentFile.delete({ where: { id: fileId } });
-
-    // Delete physical file from disk
-    try {
-      const filePath = path.join(process.cwd(), "public", file.url);
-      await unlink(filePath);
-    } catch {
-      // File may already be deleted from disk, that's fine
-    }
 
     return NextResponse.json({
       success: true,

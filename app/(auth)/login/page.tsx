@@ -134,9 +134,15 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-3">
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              This is a private marketplace. Contact the admin to create an account.
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/signup"
+                className="text-purple-600 hover:text-purple-500 dark:text-purple-400 font-medium"
+              >
+                Sign up
+              </Link>
             </p>
           </div>
         </CardContent>
