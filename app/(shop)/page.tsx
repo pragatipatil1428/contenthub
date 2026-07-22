@@ -89,8 +89,8 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-        <div className="absolute inset-0 bg-grid-zinc-900/[0.03] dark:bg-grid-zinc-50/[0.03]" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-zinc-50">
+        <div className="absolute inset-0 bg-grid-zinc-900/[0.03][0.03]" />
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <motion.div
             initial="hidden"
@@ -117,7 +117,7 @@ export default function HomePage() {
             <motion.p
               variants={fadeInUp}
               custom={2}
-              className="mt-6 text-lg leading-8 text-zinc-600 dark:text-zinc-400"
+              className="mt-6 text-lg leading-8 text-zinc-600"
             >
               Your one-stop marketplace for high-quality digital products. From courses and templates
               to music and videos — find everything you need to create, learn, and grow.
@@ -141,14 +141,14 @@ export default function HomePage() {
             <motion.div
               variants={fadeInUp}
               custom={4}
-              className="mt-12 flex items-center justify-center gap-8 text-sm text-zinc-500 dark:text-zinc-400"
+              className="mt-12 flex items-center justify-center gap-8 text-sm text-zinc-500"
             >
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-1">
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
-                      className="h-6 w-6 rounded-full border-2 border-white bg-gradient-to-br from-purple-400 to-blue-400 dark:border-zinc-950"
+                      className="h-6 w-6 rounded-full border-2 border-white bg-gradient-to-br from-purple-400 to-blue-400"
                     />
                   ))}
                 </div>
@@ -165,7 +165,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-white dark:bg-zinc-950">
+      <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -177,7 +177,7 @@ export default function HomePage() {
             <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
               Browse by Category
             </motion.h2>
-            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500 dark:text-zinc-400">
+            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
               Explore our extensive collection across every category
             </motion.p>
           </motion.div>
@@ -211,7 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-zinc-50 dark:bg-zinc-900">
+      <section className="py-20 bg-zinc-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -223,7 +223,7 @@ export default function HomePage() {
             <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
               Why Choose ContentHub?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500 dark:text-zinc-400">
+            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
               We provide the best experience for buying and selling digital content
             </motion.p>
           </motion.div>
@@ -243,7 +243,7 @@ export default function HomePage() {
                       <Icon className="h-6 w-6" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    <p className="text-sm text-zinc-500 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -255,7 +255,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white dark:bg-zinc-950">
+      <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -267,7 +267,7 @@ export default function HomePage() {
             <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
               What Our Users Say
             </motion.h2>
-            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500 dark:text-zinc-400">
+            <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
               Join thousands of satisfied customers
             </motion.p>
           </motion.div>
@@ -287,10 +287,10 @@ export default function HomePage() {
                         <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                       ))}
                     </div>
-                    <p className="text-zinc-600 dark:text-zinc-300 mb-4 leading-relaxed">
+                    <p className="text-zinc-600 mb-4 leading-relaxed">
                       &ldquo;{testimonial.content}&rdquo;
                     </p>
-                    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                    <div className="border-t border-zinc-100 pt-4">
                       <p className="font-semibold text-sm">{testimonial.name}</p>
                       <p className="text-xs text-zinc-500">{testimonial.role}</p>
                     </div>
@@ -303,7 +303,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600 dark:from-purple-800 dark:to-blue-800">
+      <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -333,7 +333,7 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-zinc-50 dark:bg-zinc-900">
+      <section className="py-20 bg-zinc-50">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -362,10 +362,10 @@ export default function HomePage() {
                 key={i}
                 variants={fadeInUp}
                 custom={i}
-                className="rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6"
+                className="rounded-2xl bg-white border border-zinc-200 p-6"
               >
                 <h3 className="font-semibold mb-2">{faq.q}</h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">{faq.a}</p>
+                <p className="text-sm text-zinc-500">{faq.a}</p>
               </motion.div>
             ))}
           </motion.div>

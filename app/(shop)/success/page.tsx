@@ -68,7 +68,7 @@ function SuccessPageContent() {
       <div className="flex items-center justify-center min-h-[80vh] px-4">
         <Card className="max-w-md w-full text-center border-0 shadow-xl">
           <CardContent className="p-8 space-y-6">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
               <FileText className="h-10 w-10 text-red-500" />
             </div>
             <h1 className="text-2xl font-bold">Purchase Not Found</h1>
@@ -110,14 +110,14 @@ function SuccessPageContent() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center space-y-4"
       >
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-          <CheckCircle className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
+          <CheckCircle className="h-10 w-10 text-emerald-600" />
         </div>
         <div>
           <h1 className="text-3xl font-bold">
             {isApproved ? "Purchase Successful!" : "Payment Submitted!"}
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-2 max-w-md mx-auto">
+          <p className="text-zinc-500 mt-2 max-w-md mx-auto">
             {isApproved
               ? "Your content is ready. View and download it below."
               : "Your payment is pending admin approval. You'll be notified once confirmed."}
@@ -211,11 +211,11 @@ function SuccessPageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+          <Card className="bg-amber-50 border-amber-200">
             <CardContent className="p-6 text-center space-y-3">
               <Clock className="mx-auto h-12 w-12 text-amber-500" />
               <h3 className="font-semibold text-lg">Awaiting Approval</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+              <p className="text-sm text-zinc-600 max-w-md mx-auto">
                 Your payment has been submitted and is pending admin review.
                 You&apos;ll receive a notification once it&apos;s approved.
               </p>

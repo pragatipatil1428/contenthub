@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-md"
     >
-      <Card className="border-0 shadow-xl dark:shadow-2xl dark:shadow-black/50">
+      <Card className="border-0 shadow-xl">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-500 text-white text-xl font-bold mb-2">
             CH
@@ -67,10 +67,10 @@ export default function ForgotPasswordPage() {
         <CardContent>
           {sent ? (
             <div className="text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                <Mail className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <Mail className="h-8 w-8 text-emerald-600" />
               </div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm text-zinc-500">
                 We&apos;ve sent a password reset link to your email. Please check your inbox.
               </p>
               <Link href="/login">
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
               </Button>
 
               <div className="text-center">
-                <Link href="/login" className="text-sm text-purple-600 hover:text-purple-500 dark:text-purple-400">
+                <Link href="/login" className="text-sm text-purple-600 hover:text-purple-500">
                   <ArrowLeft className="inline h-3 w-3 mr-1" /> Back to login
                 </Link>
               </div>

@@ -112,18 +112,18 @@ export default function ContentDetailPage() {
     >
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-zinc-500 mb-6">
-        <Link href="/" className="hover:text-zinc-900 dark:hover:text-zinc-50">Home</Link>
+        <Link href="/" className="hover:text-zinc-900:text-zinc-50">Home</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link href="/contents" className="hover:text-zinc-900 dark:hover:text-zinc-50">Contents</Link>
+        <Link href="/contents" className="hover:text-zinc-900:text-zinc-50">Contents</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-zinc-900 dark:text-zinc-50">{content.title}</span>
+        <span className="text-zinc-900">{content.title}</span>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Thumbnail */}
-          <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-100">
             {content.thumbnail ? (
               <img
                 src={content.thumbnail}
@@ -132,7 +132,7 @@ export default function ContentDetailPage() {
               />
             ) : (
               <div className="flex h-full items-center justify-center">
-                <FileText className="h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                <FileText className="h-16 w-16 text-zinc-300" />
               </div>
             )}
             {content.previewVideo && (
@@ -160,7 +160,7 @@ export default function ContentDetailPage() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold">{content.title}</h1>
             {content.subtitle && (
-              <p className="text-lg text-zinc-500 dark:text-zinc-400 mt-2">{content.subtitle}</p>
+              <p className="text-lg text-zinc-500 mt-2">{content.subtitle}</p>
             )}
 
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-zinc-500">
@@ -201,8 +201,8 @@ export default function ContentDetailPage() {
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="reviews">Reviews ({content._count?.reviews || 0})</TabsTrigger>
             </TabsList>
-            <TabsContent value="description" className="prose dark:prose-invert max-w-none">
-              <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            <TabsContent value="description" className="prose max-w-none">
+              <div className="text-zinc-600 leading-relaxed">
                 {content.description || "No description available."}
               </div>
               {content.richText && (
@@ -221,7 +221,7 @@ export default function ContentDetailPage() {
                   ["Duration", content.duration ? `${content.duration} min` : "—"],
                   ["Category", content.category?.name || "—"],
                 ].map(([label, value]) => (
-                  <div key={label as string} className="flex justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
+                  <div key={label as string} className="flex justify-between py-2 border-b border-zinc-100">
                     <span className="text-zinc-500">{label}</span>
                     <span className="font-medium">{value || "—"}</span>
                   </div>
@@ -232,7 +232,7 @@ export default function ContentDetailPage() {
               {content.reviews?.length > 0 ? (
                 <div className="space-y-4">
                   {content.reviews.map((review: any) => (
-                    <div key={review.id} className="border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                    <div key={review.id} className="border-b border-zinc-100 pb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="font-medium">{review.user?.name}</span>
                         <div className="flex gap-0.5">
@@ -241,7 +241,7 @@ export default function ContentDetailPage() {
                           ))}
                         </div>
                       </div>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-300">{review.comment}</p>
+                      <p className="text-sm text-zinc-600">{review.comment}</p>
                     </div>
                   ))}
                 </div>

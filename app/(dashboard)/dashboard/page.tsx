@@ -78,7 +78,7 @@ export default function BuyerDashboard() {
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6 flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{stat.label}</p>
+                    <p className="text-sm text-zinc-500">{stat.label}</p>
                     <p className="text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
                   <div className={`rounded-2xl bg-gradient-to-br ${stat.color} p-3 text-white`}>
@@ -115,8 +115,8 @@ export default function BuyerDashboard() {
               </div>
             ) : purchases.length === 0 ? (
               <div className="text-center py-8">
-                <ShoppingBag className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600 mb-3" />
-                <p className="text-zinc-500 dark:text-zinc-400">No purchases yet</p>
+                <ShoppingBag className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
+                <p className="text-zinc-500">No purchases yet</p>
                 <Link href="/contents">
                   <Button variant="outline" size="sm" className="mt-4">
                     Browse Content
@@ -128,10 +128,10 @@ export default function BuyerDashboard() {
                 {purchases.map((purchase: any) => (
                   <div
                     key={purchase.id}
-                    className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+                    className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                      <div className="h-12 w-12 rounded-lg bg-zinc-100 overflow-hidden">
                         {purchase.items?.[0]?.content?.thumbnail ? (
                           <img
                             src={purchase.items[0].content.thumbnail}

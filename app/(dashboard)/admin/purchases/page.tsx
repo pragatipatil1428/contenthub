@@ -49,7 +49,7 @@ export default function AdminPurchasesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">All Purchases</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-zinc-500 mt-1">
             View all purchases across all users
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function AdminPurchasesPage() {
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
-                    <ShoppingCart className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600 mb-3" />
+                    <ShoppingCart className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
                     No purchases found
                   </TableCell>
                 </TableRow>

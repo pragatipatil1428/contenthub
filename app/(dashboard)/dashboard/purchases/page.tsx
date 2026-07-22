@@ -39,7 +39,7 @@ export default function PurchasesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">My Purchases</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+        <p className="text-zinc-500 mt-1">
           View all your purchased content
         </p>
       </div>
@@ -69,7 +69,7 @@ export default function PurchasesPage() {
               ) : purchases.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-12">
-                    <ShoppingBag className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600 mb-3" />
+                    <ShoppingBag className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
                     <p className="text-zinc-500">No purchases yet</p>
                     <Link href="/contents">
                       <Button variant="outline" size="sm" className="mt-4">
@@ -88,7 +88,7 @@ export default function PurchasesPage() {
                     <TableRow key={purchase.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+                          <div className="h-10 w-10 rounded-lg bg-zinc-100 overflow-hidden flex items-center justify-center shrink-0">
                             {content?.thumbnail ? (
                               <img
                                 src={content.thumbnail}

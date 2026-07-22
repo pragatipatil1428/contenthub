@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Search, ShoppingCart, Menu, User, LogOut, Settings, LayoutDashboard, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -42,7 +41,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo & Menu */}
         <div className="flex items-center gap-4">
@@ -72,7 +71,7 @@ export function Header() {
               placeholder="Search content..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 rounded-full bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+              className="pl-9 h-9 rounded-full bg-zinc-50 border-zinc-200"
             />
           </div>
         </form>
@@ -84,12 +83,10 @@ export function Header() {
             <Search className="h-4 w-4" />
           </Button>
 
-          <ThemeToggle />
-
           <Link href="/cart">
             <Button variant="ghost" size="icon" className="h-9 w-9 relative">
               <ShoppingCart className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] text-white dark:bg-white dark:text-zinc-900">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] text-white">
                 0
               </span>
             </Button>
@@ -101,7 +98,7 @@ export function Header() {
                 <Button variant="ghost" className="h-9 gap-2 px-2">
                   <Avatar className="h-7 w-7">
                     <AvatarImage src={user.image || ""} />
-                    <AvatarFallback className="text-xs bg-zinc-100 dark:bg-zinc-800">
+                    <AvatarFallback className="text-xs bg-zinc-100">
                       {getInitials(user.name)}
                     </AvatarFallback>
                   </Avatar>
@@ -115,7 +112,7 @@ export function Header() {
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{user.name}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{user.email}</span>
+                    <span className="text-xs text-zinc-500">{user.email}</span>
                   </div>
                 </div>
                 <DropdownMenuSeparator />

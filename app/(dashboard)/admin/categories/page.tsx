@@ -145,7 +145,7 @@ export default function AdminCategoriesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Categories</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-zinc-500 mt-1">
             Manage content categories
           </p>
         </div>
@@ -226,7 +226,7 @@ export default function AdminCategoriesPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                           onClick={() => handleDelete(cat.id)}
                           disabled={deleting && deleteId === cat.id}
                         >

@@ -67,7 +67,7 @@ export default function AdminPaymentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Payment Management</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-zinc-500 mt-1">
             Review and manage payment requests
           </p>
         </div>

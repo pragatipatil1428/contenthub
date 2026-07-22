@@ -37,7 +37,7 @@ export default function AdminSettingsPage() {
     <div className="max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+        <p className="text-zinc-500 mt-1">
           Configure your marketplace settings
         </p>
       </div>

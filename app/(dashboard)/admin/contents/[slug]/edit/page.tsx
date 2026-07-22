@@ -404,7 +404,7 @@ export default function EditContentPage() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Edit Content</h1>
-              <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+              <p className="text-zinc-500 mt-1">
                 Update your digital content
               </p>
             </div>
@@ -414,7 +414,7 @@ export default function EditContentPage() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-red-900 dark:hover:bg-red-950"
+            className="gap-2 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
             onClick={handleDelete}
             disabled={isDeleting}
           >
@@ -494,8 +494,8 @@ export default function EditContentPage() {
                   onClick={() => setAutoSlug(!autoSlug)}
                   className={`text-xs flex items-center gap-1 px-2 py-1 rounded-full transition-colors ${
                     autoSlug
-                      ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400"
-                      : "text-zinc-500 bg-zinc-100 dark:bg-zinc-800"
+                      ? "text-emerald-600 bg-emerald-50"
+                      : "text-zinc-500 bg-zinc-100"
                   }`}
                 >
                   <Check className={`h-3 w-3 ${autoSlug ? "block" : "hidden"}`} />
@@ -713,7 +713,7 @@ export default function EditContentPage() {
                       <button
                         type="button"
                         onClick={() => removeTag(tag)}
-                        className="ml-1 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 p-0.5"
+                        className="ml-1 rounded-full hover:bg-zinc-200 p-0.5"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -825,7 +825,7 @@ export default function EditContentPage() {
               ].map((flag) => (
                 <label
                   key={flag.key}
-                  className="flex items-start gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                  className="flex items-start gap-3 rounded-xl border border-zinc-200 p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -834,7 +834,7 @@ export default function EditContentPage() {
                   />
                   <div>
                     <p className="text-sm font-medium">{flag.label}</p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">{flag.desc}</p>
+                    <p className="text-xs text-zinc-500">{flag.desc}</p>
                   </div>
                 </label>
               ))}
@@ -856,7 +856,7 @@ export default function EditContentPage() {
           <CardContent className="space-y-6">
             {/* Media URL Fields */}
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Media URLs</h4>
+              <h4 className="text-sm font-medium text-zinc-700">Media URLs</h4>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Thumbnail URL</Label>
@@ -893,12 +893,12 @@ export default function EditContentPage() {
               </div>
             </div>
 
-            <div className="border-t border-zinc-200 dark:border-zinc-800" />
+            <div className="border-t border-zinc-200" />
 
             {/* File Upload */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <h4 className="text-sm font-medium text-zinc-700">
                   Uploaded Files ({contentFiles.length})
                 </h4>
                 <div className="flex items-center gap-2">
@@ -952,13 +952,13 @@ export default function EditContentPage() {
 
               {/* File List */}
               {contentFiles.length === 0 ? (
-                <div className="rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 p-8 text-center">
+                <div className="rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center">
                   {watchContentType === "AUDIO" ? (
-                    <Music className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                    <Music className="mx-auto h-8 w-8 text-zinc-300" />
                   ) : watchContentType === "VIDEO" || watchContentType === "MOVIE" ? (
-                    <Film className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                    <Film className="mx-auto h-8 w-8 text-zinc-300" />
                   ) : (
-                    <Upload className="mx-auto h-8 w-8 text-zinc-300 dark:text-zinc-600" />
+                    <Upload className="mx-auto h-8 w-8 text-zinc-300" />
                   )}
                   <p className="mt-2 text-sm text-zinc-500">No files uploaded yet</p>
                   <p className="text-xs text-zinc-400">
@@ -970,7 +970,7 @@ export default function EditContentPage() {
                   {contentFiles.map((f: any) => (
                     <div
                       key={f.id}
-                      className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950"
+                      className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {getFileIcon(f.mimeType)}
@@ -982,7 +982,7 @@ export default function EditContentPage() {
                             <a
                               href={f.url}
                               target="_blank"
-                              className="text-purple-600 hover:text-purple-500 dark:text-purple-400"
+                              className="text-purple-600 hover:text-purple-500"
                             >
                               <Download className="h-3 w-3 inline" /> View
                             </a>

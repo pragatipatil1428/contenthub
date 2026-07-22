@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuthStore, useUIStore } from "@/store";
 import { getInitials } from "@/lib/utils";
 import { toast } from "sonner";
@@ -65,16 +64,16 @@ export default function AdminLayout({
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-900">
+    <div className="flex h-screen overflow-hidden bg-zinc-50">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 dark:border-zinc-800 dark:bg-zinc-950 lg:static lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:w-16"
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
+        <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4">
           <Link href="/admin" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
               CH
@@ -104,8 +103,8 @@ export default function AdminLayout({
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+                      ? "bg-zinc-900 text-white"
+                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                   )}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
@@ -117,7 +116,7 @@ export default function AdminLayout({
         </ScrollArea>
 
         {/* User */}
-        <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
+        <div className="border-t border-zinc-200 p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={user?.image || ""} />
@@ -136,17 +135,16 @@ export default function AdminLayout({
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Bar */}
-        <header className="flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-4 dark:border-zinc-800 dark:bg-zinc-950 lg:px-6">
+        <header className="flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-4 lg:px-6">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={toggleSidebar}>
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50">
+            <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900">
               ← Back to site
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Logout</span>

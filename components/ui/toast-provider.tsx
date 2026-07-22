@@ -13,7 +13,6 @@ export function ToastProvider() {
           border: "1px solid hsl(214.3 31.8% 91.4%)",
           borderRadius: "12px",
         },
-        className: "dark:bg-zinc-950 dark:text-zinc-50 dark:border-zinc-800",
       }}
       richColors
       closeButton

@@ -62,7 +62,7 @@ export default function ProfilePage() {
     >
       <div>
         <h1 className="text-2xl font-bold">Profile</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+        <p className="text-zinc-500 mt-1">
           Manage your personal information
         </p>
       </div>
@@ -81,7 +81,7 @@ export default function ProfilePage() {
                   {user ? getInitials(user.name) : "U"}
                 </AvatarFallback>
               </Avatar>
-              <button className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900">
+              <button className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 text-white">
                 <Camera className="h-3 w-3" />
               </button>
             </div>

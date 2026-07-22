@@ -63,7 +63,7 @@ export default function AdminContentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Content Management</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-zinc-500 mt-1">
             Manage all your digital content
           </p>
         </div>

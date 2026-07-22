@@ -64,7 +64,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">User Management</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+        <p className="text-zinc-500 mt-1">
           Manage all registered users
         </p>
       </div>

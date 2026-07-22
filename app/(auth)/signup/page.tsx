@@ -69,7 +69,7 @@ export default function SignupPage() {
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-md"
     >
-      <Card className="border-0 shadow-xl dark:shadow-2xl dark:shadow-black/50">
+      <Card className="border-0 shadow-xl">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-500 text-white text-xl font-bold mb-2">
             CH
@@ -199,22 +199,22 @@ export default function SignupPage() {
           </form>
 
           <div className="mt-6 text-center space-y-3">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-zinc-500">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-purple-600 hover:text-purple-500 dark:text-purple-400 font-medium"
+                className="text-purple-600 hover:text-purple-500 font-medium"
               >
                 Sign in
               </Link>
             </p>
             <p className="text-xs text-zinc-400">
               By creating an account, you agree to our{" "}
-              <Link href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">
+              <Link href="/terms" className="underline hover:text-zinc-600:text-zinc-300">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">
+              <Link href="/privacy" className="underline hover:text-zinc-600:text-zinc-300">
                 Privacy Policy
               </Link>
             </p>

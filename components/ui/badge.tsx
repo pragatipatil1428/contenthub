@@ -7,15 +7,15 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900",
-        secondary: "border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-50",
+        default: "border-transparent bg-zinc-900 text-white hover:bg-zinc-800",
+        secondary: "border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-200",
         destructive: "border-transparent bg-red-500 text-white hover:bg-red-600",
         success: "border-transparent bg-emerald-500 text-white hover:bg-emerald-600",
         warning: "border-transparent bg-amber-500 text-white hover:bg-amber-600",
-        outline: "text-zinc-900 dark:text-zinc-50",
-        free: "border-transparent bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-        paid: "border-transparent bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-        premium: "border-transparent bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 dark:from-amber-900/30 dark:to-orange-900/30 dark:text-amber-400",
+        outline: "text-zinc-900",
+        free: "border-transparent bg-emerald-100 text-emerald-700",
+        paid: "border-transparent bg-blue-100 text-blue-700",
+        premium: "border-transparent bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700",
       },
     },
     defaultVariants: {

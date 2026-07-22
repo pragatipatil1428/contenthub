@@ -61,7 +61,7 @@ export default function LoginPage() {
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-md"
     >
-      <Card className="border-0 shadow-xl dark:shadow-2xl dark:shadow-black/50">
+      <Card className="border-0 shadow-xl">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-500 text-white text-xl font-bold mb-2">
             CH
@@ -90,7 +90,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-purple-600 hover:text-purple-500 dark:text-purple-400">
+                <Link href="/forgot-password" className="text-xs text-purple-600 hover:text-purple-500">
                   Forgot password?
                 </Link>
               </div>
@@ -135,11 +135,11 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center space-y-3">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-zinc-500">
               Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
-                className="text-purple-600 hover:text-purple-500 dark:text-purple-400 font-medium"
+                className="text-purple-600 hover:text-purple-500 font-medium"
               >
                 Sign up
               </Link>

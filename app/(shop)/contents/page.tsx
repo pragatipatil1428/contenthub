@@ -30,7 +30,7 @@ function ContentCard({ content }: { content: any }) {
     >
       <Link href={`/content/${content.slug}`}>
         <Card className="overflow-hidden card-hover h-full">
-          <div className="relative aspect-[16/9] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+          <div className="relative aspect-[16/9] bg-zinc-100 overflow-hidden">
             {content.thumbnail ? (
               <img
                 src={content.thumbnail}
@@ -39,7 +39,7 @@ function ContentCard({ content }: { content: any }) {
               />
             ) : (
               <div className="flex h-full items-center justify-center">
-                <Download className="h-10 w-10 text-zinc-300 dark:text-zinc-600" />
+                <Download className="h-10 w-10 text-zinc-300" />
               </div>
             )}
             {/* Overlay badges */}
@@ -60,11 +60,11 @@ function ContentCard({ content }: { content: any }) {
             </div>
           </div>
           <CardContent className="p-4">
-            <h3 className="font-semibold line-clamp-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+            <h3 className="font-semibold line-clamp-1 group-hover:text-purple-600:text-purple-400 transition-colors">
               {content.title}
             </h3>
             {content.subtitle && (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-1">
+              <p className="text-sm text-zinc-500 line-clamp-1 mt-1">
                 {content.subtitle}
               </p>
             )}
@@ -167,7 +167,7 @@ function ContentsPageContent() {
             "Browse Content"
           )}
         </h1>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-2">
+        <p className="text-zinc-500 mt-2">
           {typeFilter !== "ALL"
             ? `Browse all ${(contentTypeLabels[typeFilter] || typeFilter).toLowerCase()} available in our marketplace`
             : "Discover premium digital content curated for you"}
@@ -209,7 +209,7 @@ function ContentsPageContent() {
               <SelectItem value="price_desc">Price: High</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <div className="flex items-center border border-zinc-200 rounded-lg">
             <Button
               variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="icon"
@@ -246,7 +246,7 @@ function ContentsPageContent() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
-          <Download className="mx-auto h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+          <Download className="mx-auto h-16 w-16 text-zinc-300" />
           <h3 className="text-lg font-semibold mt-4">No content found</h3>
           <p className="text-zinc-500 mt-2">Try adjusting your search or filter criteria</p>
         </div>

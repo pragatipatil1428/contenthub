@@ -140,10 +140,10 @@ export default function PaymentPage() {
               <span className="text-zinc-500">Amount</span>
               <span className="text-xl font-bold">{formatPrice(purchase.finalAmount)}</span>
             </div>
-            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-3">
+            <div className="border-t border-zinc-200 pt-3">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-amber-500" />
-                <span className="text-sm text-amber-600 dark:text-amber-400">
+                <span className="text-sm text-amber-600">
                   Complete payment within {formatTime(countdown)}
                 </span>
               </div>
@@ -162,7 +162,7 @@ export default function PaymentPage() {
           <CardContent className="space-y-6">
             {/* QR Code (placeholder) */}
             <div className="flex justify-center">
-              <div className="h-48 w-48 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-600">
+              <div className="h-48 w-48 rounded-2xl bg-zinc-100 flex items-center justify-center border-2 border-dashed border-zinc-300">
                 <div className="text-center">
                   <QrCode className="mx-auto h-12 w-12 text-zinc-400" />
                   <p className="text-xs text-zinc-400 mt-2">QR Code Here</p>
@@ -180,7 +180,7 @@ export default function PaymentPage() {
             <div className="space-y-2">
               <Label>UPI ID</Label>
               <div className="flex items-center gap-2">
-                <Input value="admin@contenthub" readOnly className="bg-zinc-50 dark:bg-zinc-900" />
+                <Input value="admin@contenthub" readOnly className="bg-zinc-50" />
                 <Button
                   variant="outline"
                   size="sm"
@@ -194,8 +194,8 @@ export default function PaymentPage() {
             </div>
 
             {/* Instructions */}
-            <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4">
-              <p className="text-sm text-amber-800 dark:text-amber-200">
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+              <p className="text-sm text-amber-800">
                 1. Open any UPI app (Google Pay, PhonePe, Paytm)
                 2. Scan the QR code or enter the UPI ID
                 3. Pay the exact amount shown above
@@ -204,7 +204,7 @@ export default function PaymentPage() {
             </div>
 
             {/* Transaction Form */}
-            <div className="space-y-4 border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <div className="space-y-4 border-t border-zinc-200 pt-4">
               <h3 className="font-semibold">Confirm Your Payment</h3>
               <div className="space-y-2">
                 <Label htmlFor="transactionId">Transaction ID *</Label>

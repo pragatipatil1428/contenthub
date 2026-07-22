@@ -42,7 +42,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
   const renderMediaPlayer = () => {
     if (!mainFile) {
       return (
-        <div className="aspect-video rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+        <div className="aspect-video rounded-2xl bg-zinc-100 flex items-center justify-center">
           {thumbnail ? (
             <img
               src={thumbnail}
@@ -51,7 +51,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
             />
           ) : (
             <div className="text-center">
-              <FileText className="mx-auto h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+              <FileText className="mx-auto h-16 w-16 text-zinc-300" />
               <p className="mt-2 text-sm text-zinc-400">No preview available</p>
             </div>
           )}
@@ -64,7 +64,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
     switch (contentType) {
       case "IMAGE":
         return (
-          <div className="rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+          <div className="rounded-2xl overflow-hidden bg-zinc-100">
             <img
               src={fileUrl}
               alt={title}
@@ -90,7 +90,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
 
       case "AUDIO":
         return (
-          <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-100 dark:border-purple-900 p-6 space-y-4">
+          <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100 p-6 space-y-4">
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
                 <Music className="h-8 w-8 text-white" />
@@ -110,14 +110,14 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
       case "PDF":
         return (
           <div className="space-y-4">
-            <div className="aspect-video rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+            <div className="aspect-video rounded-2xl overflow-hidden bg-zinc-100">
               <iframe
                 src={fileUrl}
                 className="h-full w-full"
                 title={title}
               />
             </div>
-            <div className="flex items-center justify-between rounded-xl bg-zinc-50 dark:bg-zinc-900 p-4">
+            <div className="flex items-center justify-between rounded-xl bg-zinc-50 p-4">
               <div className="flex items-center gap-3">
                 <FileText className="h-8 w-8 text-red-500" />
                 <div>
@@ -139,7 +139,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
       default:
         // For other content types (EBOOK, SOFTWARE, TEMPLATE, etc.)
         return (
-          <div className="rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center min-h-[200px]">
+          <div className="rounded-2xl bg-zinc-100 flex items-center justify-center min-h-[200px]">
             {thumbnail ? (
               <img
                 src={thumbnail}
@@ -148,7 +148,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
               />
             ) : (
               <div className="text-center p-8">
-                <FileArchive className="mx-auto h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                <FileArchive className="mx-auto h-16 w-16 text-zinc-300" />
                 <p className="mt-2 text-sm text-zinc-400">Content ready for download</p>
               </div>
             )}
@@ -164,7 +164,7 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
 
       {/* Description */}
       {description && (
-        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+        <p className="text-zinc-600 text-sm leading-relaxed">
           {description}
         </p>
       )}
@@ -172,14 +172,14 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
       {/* File List */}
       {files.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider">
             Files ({files.length})
           </h3>
           <div className="space-y-2">
             {files.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-300:border-zinc-700 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {getFileIcon(file.mimeType)}
@@ -206,8 +206,8 @@ export function MediaViewer({ contentType, title, thumbnail, files, description 
 
       {/* No files message */}
       {files.length === 0 && contentType !== "EXTERNAL_LINK" && (
-        <div className="text-center py-8 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-          <Download className="mx-auto h-10 w-10 text-zinc-300 dark:text-zinc-600" />
+        <div className="text-center py-8 rounded-xl border-2 border-dashed border-zinc-200">
+          <Download className="mx-auto h-10 w-10 text-zinc-300" />
           <p className="mt-2 text-sm text-zinc-500">No files available yet</p>
         </div>
       )}

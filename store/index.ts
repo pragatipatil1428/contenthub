@@ -14,11 +14,6 @@ interface User {
   isPremium: boolean;
 }
 
-interface ThemeState {
-  theme: "light" | "dark" | "system";
-  setTheme: (theme: "light" | "dark" | "system") => void;
-}
-
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
@@ -55,17 +50,6 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-export const useThemeStore = create<ThemeState>()(
-  persist(
-    (set) => ({
-      theme: "system",
-      setTheme: (theme) => set({ theme }),
-    }),
-    {
-      name: "theme-storage",
-    }
-  )
-);
 
 export const useUIStore = create<UIState>((set) => ({
   sidebarOpen: true,

@@ -12,11 +12,6 @@
   --foreground: #09090b;
 }
 
-.dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-}
-
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
@@ -43,9 +38,6 @@ body {
   border-radius: 3px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: hsl(0 0% 30%);
-}
 
 /* Range slider customization */
 input[type="range"] {
@@ -57,9 +49,6 @@ input[type="range"] {
   outline: none;
 }
 
-.dark input[type="range"] {
-  background: hsl(0 0% 20%);
-}
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -73,10 +62,6 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.dark input[type="range"]::-webkit-slider-thumb {
-  background: hsl(0 0% 100%);
-  border: 2px solid hsl(0 0% 0%);
-}
 
 /* File upload styling */
 .file-upload-area {
@@ -87,21 +72,10 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.dark .file-upload-area {
-  border-color: hsl(0 0% 30%);
-}
-
 .file-upload-area:hover,
 .file-upload-area.dragover {
   border-color: hsl(0 0% 0%);
   background: hsl(0 0% 97%);
-}
-
-.dark .file-upload-area:hover,
-.dark .file-upload-area.dragover {
-  border-color: hsl(0 0% 100%);
-  background: hsl(0 0% 15%);
 }
 
 /* Toast animations */
@@ -147,6 +121,3 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.dark .card-hover:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
