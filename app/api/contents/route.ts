@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type") || "";
     const priceType = searchParams.get("priceType") || "";
     const sort = searchParams.get("sort") || "newest";
-    const status = searchParams.get("status") || "PUBLISHED";
+    const status = searchParams.get("status") || "";
     const featured = searchParams.get("featured") || "";
     const trending = searchParams.get("trending") || "";
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           category: { select: { id: true, name: true, slug: true } },
           subCategory: { select: { id: true, name: true } },
           tags: true,
-          _count: { select: { reviews: true, downloads: true } },
+          _count: { select: { reviews: true } },
         },
       }),
       prisma.content.count({ where: where as any }),
