@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "vercel-build": "npx prisma db seed",
+    "vercel-build": "next build && npx prisma db seed",
     "lint": "eslint"
   },
   "dependencies": {
