@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, X, Search, ExternalLink } from "lucide-react";
+import { Check, X, Search, Eye } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -158,26 +159,35 @@ export default function AdminPaymentsPage() {
                       {formatDateTime(payment.createdAt)}
                     </TableCell>
                     <TableCell>
-                      {payment.status === "PENDING" && (
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 text-emerald-500"
-                            onClick={() => handleAction(payment.id, "approve")}
-                          >
-                            <Check className="h-4 w-4" />
+                      <div className="flex items-center gap-1">
+                        {payment.purchase?.id && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                            <Link href={`/success?purchaseId=${payment.purchase.id}`} target="_blank">
+                              <Eye className="h-4 w-4" />
+                            </Link>
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 text-red-500"
-                            onClick={() => handleAction(payment.id, "reject")}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
+                        )}
+                        {payment.status === "PENDING" && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 text-emerald-500"
+                              onClick={() => handleAction(payment.id, "approve")}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 text-red-500"
+                              onClick={() => handleAction(payment.id, "reject")}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

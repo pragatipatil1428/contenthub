@@ -125,7 +125,14 @@ export default function AdminContentsPage() {
               ) : (
                 filtered.map((content) => (
                   <TableRow key={content.id}>
-                    <TableCell className="font-medium">{content.title}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/admin/contents/${content.slug}/edit?id=${content.id}`}
+                        className="hover:text-purple-600 transition-colors"
+                      >
+                        {content.title}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary">{content.contentType}</Badge>
                     </TableCell>
@@ -156,7 +163,7 @@ export default function AdminContentsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                          <Link href={`/content/${content.slug}`}><Eye className="h-4 w-4" /></Link>
+                          <Link href={`/content/${content.slug}`} target="_blank"><Eye className="h-4 w-4" /></Link>
                         </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                           <Link href={`/admin/contents/${content.slug}/edit`}><Edit className="h-4 w-4" /></Link>

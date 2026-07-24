@@ -146,13 +146,11 @@ export default function AdminPurchasesPage() {
                         {formatDateTime(purchase.createdAt)}
                       </TableCell>
                       <TableCell>
-                        {content?.slug && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                            <Link href={`/content/${content.slug}`} target="_blank">
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        )}
+                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                          <Link href={`/success?purchaseId=${purchase.id}`} target="_blank">
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
