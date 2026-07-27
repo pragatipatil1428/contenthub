@@ -76,7 +76,7 @@ export default function BuyerDashboardLayout({
         <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
-              CH
+              C
             </div>
             {sidebarOpen && <span className="text-lg font-bold">Dashboard</span>}
           </Link>

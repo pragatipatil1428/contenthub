@@ -64,7 +64,7 @@ export function Header() {
           </Button>
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
-              CH
+              C
             </div>
             <span className="text-lg font-bold tracking-tight hidden sm:block">
               ContentHub

@@ -8,7 +8,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
-                CH
+                C
               </div>
               <span className="text-lg font-bold">ContentHub</span>
             </Link>

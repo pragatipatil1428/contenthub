@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
       <Card className="border-0 shadow-xl">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-blue-500 text-white text-xl font-bold mb-2">
-            CH
+            C
           </div>
           <CardTitle className="text-2xl">Reset your password</CardTitle>
           <CardDescription>

@@ -59,11 +59,9 @@ export function truncate(str: string, length: number = 100): string {
 
 export function getInitials(name: string): string {
   return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .substring(0, 2);
+    .trim()
+    .charAt(0)
+    .toUpperCase();
 }
 
 export function calculatePercentage(price: number, originalPrice: number): number {
