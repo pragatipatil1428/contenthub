@@ -141,7 +141,7 @@ export default function AdminPurchasesPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs text-zinc-500 hidden sm:table-cell">
-                          {purchase.paymentMethod}
+                          {purchase.finalAmount === 0 ? "Free" : purchase.paymentMethod}
                         </TableCell>
                         <TableCell className="text-xs text-zinc-500 whitespace-nowrap hidden md:table-cell">
                           {formatDateTime(purchase.createdAt)}

@@ -131,7 +131,7 @@ export default function PurchasesPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-zinc-500 text-sm hidden md:table-cell">
-                          {purchase.paymentMethod}
+                          {purchase.finalAmount === 0 ? "Free" : purchase.paymentMethod}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
