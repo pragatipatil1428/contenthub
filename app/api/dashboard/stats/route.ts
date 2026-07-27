@@ -35,7 +35,7 @@ export async function GET() {
       }),
       prisma.purchase.count({ where: { paymentStatus: "APPROVED" } }),
       // Count QR payments pending admin approval (these need admin action)
-      prisma.qrPayment.count({ where: { status: "PENDING" } }),
+      prisma.qRPayment.count({ where: { status: "PENDING" } }),
       // Total purchases with PENDING payment status for info
       prisma.purchase.count({ where: { paymentStatus: "PENDING" } }),
       prisma.purchase.count({ where: { paymentStatus: "FAILED" } }),

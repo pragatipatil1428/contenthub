@@ -85,12 +85,7 @@ export async function requireAdmin() {
   if (!user.isOwnerAdmin) {
     throw new AuthError("Admin access required");
   }
-  // Extra verification: ensure the admin email matches ADMIN_EMAIL
-  // This supports the current single-owner-admin model
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (adminEmail && user.email !== adminEmail) {
-    throw new AuthError("Admin access required");
-  }
+
   return user;
 }
 

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create QR payment record
-    const qrPayment = await prisma.qrPayment.create({
+    const qrPayment = await prisma.qRPayment.create({
       data: {
         purchaseId,
         userId: session.userId,
@@ -77,7 +77,7 @@ export async function GET() {
   try {
     await requireAdmin();
 
-    const qrPayments = await prisma.qrPayment.findMany({
+    const qrPayments = await prisma.qRPayment.findMany({
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {

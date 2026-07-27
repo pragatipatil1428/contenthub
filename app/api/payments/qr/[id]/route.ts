@@ -12,7 +12,7 @@ export async function PUT(
     const body = await request.json();
     const { action, adminNote } = body;
 
-    const qrPayment = await prisma.qrPayment.findUnique({
+    const qrPayment = await prisma.qRPayment.findUnique({
       where: { id },
       include: { purchase: true },
     });
@@ -74,7 +74,7 @@ export async function PUT(
         message: "Payment approved successfully",
       });
     } else if (action === "reject") {
-      await prisma.qrPayment.update({
+      await prisma.qRPayment.update({
         where: { id },
         data: { status: "REJECTED", adminNote, rejectedAt: new Date() },
       });
