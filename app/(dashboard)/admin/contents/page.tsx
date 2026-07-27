@@ -94,95 +94,98 @@ export default function AdminContentsPage() {
       </Card>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Views</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 8 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 7 }).map((_, j) => (
-                      <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : filtered.length === 0 ? (
+        <CardContent className="p-0 overflow-x-auto">
+          <div className="min-w-[700px] md:min-w-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
-                    No content found. Start by adding your first content.
-                  </TableCell>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden sm:table-cell">Views</TableHead>
+                  <TableHead className="hidden sm:table-cell">Created</TableHead>
+                  <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
-              ) : (
-                filtered.map((content) => (
-                  <TableRow key={content.id}>
-                    <TableCell className="font-medium">
-                      <Link
-                        href={`/admin/contents/${content.slug}/edit?id=${content.id}`}
-                        className="hover:text-purple-600 transition-colors"
-                      >
-                        {content.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{content.contentType}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {content.priceType === "FREE" ? (
-                        <Badge variant="free">Free</Badge>
-                      ) : (
-                        <span>₹{content.discountPrice || content.originalPrice}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          content.status === "PUBLISHED"
-                            ? "success"
-                            : content.status === "DRAFT"
-                            ? "warning"
-                            : "secondary"
-                        }
-                      >
-                        {content.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{content.views}</TableCell>
-                    <TableCell className="text-zinc-500">
-                      {formatDate(content.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                          <Link href={`/content/${content.slug}`} target="_blank"><Eye className="h-4 w-4" /></Link>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                          <Link href={`/admin/contents/${content.slug}/edit`}><Edit className="h-4 w-4" /></Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600"
-                          onClick={() => handleDelete(content.slug)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 7 }).map((_, j) => (
+                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
+                      No content found. Start by adding your first content.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  filtered.map((content) => (
+                    <TableRow key={content.id}>
+                      <TableCell className="font-medium">
+                        <Link
+                          href={`/admin/contents/${content.slug}/edit?id=${content.id}`}
+                          className="hover:text-purple-600 transition-colors"
+                        >
+                          <span className="line-clamp-1">{content.title}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="whitespace-nowrap">{content.contentType}</Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {content.priceType === "FREE" ? (
+                          <Badge variant="free">Free</Badge>
+                        ) : (
+                          <span>₹{content.discountPrice || content.originalPrice}</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            content.status === "PUBLISHED"
+                              ? "success"
+                              : content.status === "DRAFT"
+                              ? "warning"
+                              : "secondary"
+                          }
+                          className="whitespace-nowrap"
+                        >
+                          {content.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">{content.views}</TableCell>
+                      <TableCell className="text-zinc-500 hidden sm:table-cell whitespace-nowrap">
+                        {formatDate(content.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                            <Link href={`/content/${content.slug}`} target="_blank"><Eye className="h-4 w-4" /></Link>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                            <Link href={`/admin/contents/${content.slug}/edit`}><Edit className="h-4 w-4" /></Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-600"
+                            onClick={() => handleDelete(content.slug)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

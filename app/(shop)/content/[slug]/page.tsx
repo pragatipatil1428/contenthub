@@ -111,12 +111,12 @@ export default function ContentDetailPage() {
       className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500 mb-6">
-        <Link href="/" className="hover:text-zinc-900:text-zinc-50">Home</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link href="/contents" className="hover:text-zinc-900:text-zinc-50">Contents</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-zinc-900">{content.title}</span>
+      <div className="flex items-center gap-2 text-sm text-zinc-500 mb-4 sm:mb-6 flex-wrap">
+        <Link href="/" className="hover:text-zinc-900:text-zinc-50 shrink-0">Home</Link>
+        <ChevronRight className="h-3 w-3 shrink-0" />
+        <Link href="/contents" className="hover:text-zinc-900:text-zinc-50 shrink-0">Contents</Link>
+        <ChevronRight className="h-3 w-3 shrink-0" />
+        <span className="text-zinc-900 truncate min-w-0">{content.title}</span>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
@@ -163,7 +163,7 @@ export default function ContentDetailPage() {
               <p className="text-lg text-zinc-500 mt-2">{content.subtitle}</p>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-zinc-500">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-zinc-500">
               {content.author && (
                 <span className="flex items-center gap-1">
                   <User className="h-4 w-4" /> {content.author}
@@ -255,8 +255,8 @@ export default function ContentDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Purchase Card */}
-          <Card className="sticky top-24">
-            <CardContent className="p-6 space-y-6">
+          <Card className="lg:sticky lg:top-24">
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Price */}
               <div className="text-center">
                 {content.priceType === "FREE" ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingCart, Menu, User, LogOut, Settings, LayoutDashboard, Shield } from "lucide-react";
+import { Search, ShoppingCart, Menu, User, LogOut, Settings, LayoutDashboard, Shield, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,18 +15,27 @@ import {
 import { useAuthStore, useUIStore } from "@/store";
 import { getInitials } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { setMobileMenuOpen } = useUIStore();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (mobileSearchOpen && mobileSearchRef.current) {
+      mobileSearchRef.current.focus();
+    }
+  }, [mobileSearchOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
     }
   };
 
@@ -44,16 +53,16 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo & Menu */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden h-9 w-9"
             onClick={() => setMobileMenuOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
               CH
             </div>
@@ -63,8 +72,8 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Center: Search */}
-        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
+        {/* Center: Search - Desktop */}
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-2 lg:mx-4">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             <Input
@@ -76,10 +85,45 @@ export function Header() {
           </div>
         </form>
 
+        {/* Mobile Search Bar (expandable) */}
+        {mobileSearchOpen && (
+          <div className="absolute inset-x-0 top-0 z-50 bg-white border-b border-zinc-200 px-4 py-3 md:hidden animate-in slide-in-from-top-0.5 duration-200">
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Input
+                  ref={mobileSearchRef}
+                  placeholder="Search content..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-10 rounded-full bg-zinc-50 border-zinc-200"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 shrink-0"
+                onClick={() => {
+                  setMobileSearchOpen(false);
+                  setSearchQuery("");
+                }}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </form>
+          </div>
+        )}
+
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          {/* Mobile Search */}
-          <Button variant="ghost" size="icon" className="md:hidden h-9 w-9">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Mobile Search Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden h-9 w-9"
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+          >
             <Search className="h-4 w-4" />
           </Button>
 
@@ -95,24 +139,24 @@ export function Header() {
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-9 gap-2 px-2">
-                  <Avatar className="h-7 w-7">
+                <Button variant="ghost" className="h-9 gap-1 sm:gap-2 px-1.5 sm:px-2">
+                  <Avatar className="h-7 w-7 shrink-0">
                     <AvatarImage src={user.image || ""} />
                     <AvatarFallback className="text-xs bg-zinc-100">
                       {getInitials(user.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:block text-sm font-medium">{user.name}</span>
+                  <span className="hidden sm:block text-sm font-medium max-w-[100px] truncate">{user.name}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="flex items-center gap-2 px-2 py-1.5">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8 shrink-0">
                     <AvatarFallback className="text-xs">{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">{user.name}</span>
-                    <span className="text-xs text-zinc-500">{user.email}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-medium truncate">{user.name}</span>
+                    <span className="text-xs text-zinc-500 truncate">{user.email}</span>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
@@ -126,11 +170,11 @@ export function Header() {
                     Admin Panel
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/settings")}>
+                <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </DropdownMenuItem>
@@ -142,9 +186,9 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Link href="/login">
-                <Button size="sm" className="h-9">
+                <Button size="sm" className="h-9 text-sm px-3 sm:px-4">
                   Login
                 </Button>
               </Link>

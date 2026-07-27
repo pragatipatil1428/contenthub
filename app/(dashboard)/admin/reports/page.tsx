@@ -69,52 +69,50 @@ export default function AdminReportsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Monthly Revenue</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200">
-                <th className="text-left py-2 font-medium text-zinc-500">Month</th>
-                <th className="text-right py-2 font-medium text-zinc-500">Revenue</th>
-                <th className="text-right py-2 font-medium text-zinc-500">Purchases</th>
-              </tr>
-            </thead>
-            <tbody>
-              {charts?.revenue?.slice().reverse().map((item: any) => (
-                <tr key={item.month} className="border-b border-zinc-100 last:border-0">
-                  <td className="py-2.5">{item.month}</td>
-                  <td className="text-right py-2.5 font-medium">{formatPrice(item.revenue)}</td>
-                  <td className="text-right py-2.5 text-zinc-500">{item.purchases}</td>
+        </CardHeader>          <CardContent className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[300px]">
+              <thead>
+                <tr className="border-b border-zinc-200">
+                  <th className="text-left py-2 font-medium text-zinc-500">Month</th>
+                  <th className="text-right py-2 font-medium text-zinc-500">Revenue</th>
+                  <th className="text-right py-2 font-medium text-zinc-500">Purchases</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
+              </thead>
+              <tbody>
+                {charts?.revenue?.slice().reverse().map((item: any) => (
+                  <tr key={item.month} className="border-b border-zinc-100 last:border-0">
+                    <td className="py-2.5">{item.month}</td>
+                    <td className="text-right py-2.5 font-medium whitespace-nowrap">{formatPrice(item.revenue)}</td>
+                    <td className="text-right py-2.5 text-zinc-500">{item.purchases}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
       </Card>
 
       {/* Category Distribution */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Content by Category</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200">
-                <th className="text-left py-2 font-medium text-zinc-500">Category</th>
-                <th className="text-right py-2 font-medium text-zinc-500">Items</th>
-              </tr>
-            </thead>
-            <tbody>
-              {charts?.categories?.map((cat: any) => (
-                <tr key={cat.name} className="border-b border-zinc-100 last:border-0">
-                  <td className="py-2.5">{cat.name}</td>
-                  <td className="text-right py-2.5 text-zinc-500">{cat.count}</td>
+        </CardHeader>          <CardContent className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[250px]">
+              <thead>
+                <tr className="border-b border-zinc-200">
+                  <th className="text-left py-2 font-medium text-zinc-500">Category</th>
+                  <th className="text-right py-2 font-medium text-zinc-500">Items</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
+              </thead>
+              <tbody>
+                {charts?.categories?.map((cat: any) => (
+                  <tr key={cat.name} className="border-b border-zinc-100 last:border-0">
+                    <td className="py-2.5">{cat.name}</td>
+                    <td className="text-right py-2.5 text-zinc-500">{cat.count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
       </Card>
 
       {/* Download Stats */}

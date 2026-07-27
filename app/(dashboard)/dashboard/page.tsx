@@ -48,7 +48,7 @@ export default function BuyerDashboard() {
             <p className="text-purple-100 mt-2 max-w-md">
               Your digital content library is ready. Browse your purchases, downloads, and more.
             </p>
-            <div className="flex flex-wrap gap-3 mt-6">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 mt-6">
               <Link href="/contents">
                 <Button variant="secondary" className="bg-white text-purple-600 hover:bg-purple-50">
                   Browse Content <ArrowRight className="ml-2 h-4 w-4" />

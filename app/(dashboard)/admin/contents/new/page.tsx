@@ -160,28 +160,30 @@ export default function NewContentPage() {
       className="space-y-8"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push("/admin/contents")}
-              className="h-9 w-9"
+              className="h-9 w-9 shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Create Content</h1>
-              <p className="text-zinc-500 mt-1">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold truncate">Create Content</h1>
+              <p className="text-zinc-500 mt-1 text-sm hidden sm:block">
                 Add new digital content to your marketplace
               </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <Button
             variant="outline"
+            size="sm"
+            className="hidden sm:inline-flex"
             onClick={() => router.push("/admin/contents")}
           >
             Cancel
@@ -189,6 +191,7 @@ export default function NewContentPage() {
           <Button
             onClick={handleSubmit(onSubmit)}
             disabled={isSubmitting}
+            size="sm"
             className="gap-2"
           >
             {isSubmitting ? (
@@ -196,10 +199,15 @@ export default function NewContentPage() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSubmitting ? "Saving..." : "Save Content"}
+            {isSubmitting ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>
+
+      {/* Mobile description */}
+      <p className="text-zinc-500 mt-1 text-sm sm:hidden">
+        Add new digital content to your marketplace
+      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Information */}
@@ -591,9 +599,10 @@ export default function NewContentPage() {
         </Card>
 
         {/* Form Actions - Mobile */}
-        <div className="flex items-center justify-between pb-8 lg:hidden">
+        <div className="flex items-center justify-between pb-8 sm:hidden">
           <Button
             variant="outline"
+            size="sm"
             onClick={() => router.push("/admin/contents")}
           >
             Cancel
@@ -602,13 +611,14 @@ export default function NewContentPage() {
             type="submit"
             disabled={isSubmitting}
             className="gap-2"
+            size="sm"
           >
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSubmitting ? "Saving..." : "Save Content"}
+            {isSubmitting ? "Saving..." : "Save"}
           </Button>
         </div>
       </form>

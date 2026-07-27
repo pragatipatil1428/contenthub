@@ -81,7 +81,7 @@ export default function AdminNotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Notifications</h1>
           <p className="text-zinc-500 mt-1">
@@ -89,7 +89,7 @@ export default function AdminNotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 && (
-          <Button variant="outline" size="sm" className="gap-2" onClick={handleMarkAllRead}>
+          <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto" onClick={handleMarkAllRead}>
             <CheckCheck className="h-4 w-4" />
             Mark All Read ({unreadCount})
           </Button>

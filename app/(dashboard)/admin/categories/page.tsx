@@ -185,64 +185,66 @@ export default function AdminCategoriesPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Content Count</TableHead>
-                <TableHead>Sub Categories</TableHead>
-                <TableHead className="w-[120px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : categories.length === 0 ? (
+        <CardContent className="p-0 overflow-x-auto">
+          <div className="min-w-[500px] md:min-w-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12 text-zinc-500">
-                    No categories yet. Create your first category.
-                  </TableCell>
+                  <TableHead>Name</TableHead>
+                  <TableHead className="hidden sm:table-cell">Slug</TableHead>
+                  <TableHead>Content</TableHead>
+                  <TableHead className="hidden sm:table-cell">Sub Categories</TableHead>
+                  <TableHead className="w-[120px]">Actions</TableHead>
                 </TableRow>
-              ) : (
-                categories.map((cat) => (
-                  <TableRow key={cat.id}>
-                    <TableCell className="font-medium">{cat.name}</TableCell>
-                    <TableCell className="text-zinc-500 text-sm">{cat.slug}</TableCell>
-                    <TableCell>{cat._count?.contents || 0}</TableCell>
-                    <TableCell>{cat.subCategories?.length || 0}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(cat)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                          onClick={() => handleDelete(cat.id)}
-                          disabled={deleting && deleteId === cat.id}
-                        >
-                          {deleting && deleteId === cat.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : categories.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12 text-zinc-500">
+                      No categories yet. Create your first category.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  categories.map((cat) => (
+                    <TableRow key={cat.id}>
+                      <TableCell className="font-medium">{cat.name}</TableCell>
+                      <TableCell className="text-zinc-500 text-sm hidden sm:table-cell">{cat.slug}</TableCell>
+                      <TableCell>{cat._count?.contents || 0}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{cat.subCategories?.length || 0}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(cat)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            onClick={() => handleDelete(cat.id)}
+                            disabled={deleting && deleteId === cat.id}
+                          >
+                            {deleting && deleteId === cat.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

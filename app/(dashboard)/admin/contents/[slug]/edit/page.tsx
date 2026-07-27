@@ -391,26 +391,26 @@ export default function EditContentPage() {
       className="space-y-8"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push("/admin/contents")}
-              className="h-9 w-9"
+              className="h-9 w-9 shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Edit Content</h1>
-              <p className="text-zinc-500 mt-1">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold truncate">Edit Content</h1>
+              <p className="text-zinc-500 mt-1 text-sm hidden sm:block">
                 Update your digital content
               </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -425,7 +425,7 @@ export default function EditContentPage() {
             )}
             <span className="hidden sm:inline">Delete</span>
           </Button>
-          <Button variant="outline" size="sm" className="gap-2" asChild>
+          <Button variant="outline" size="sm" className="gap-2 hidden sm:inline-flex" asChild>
             <Link href={`/content/${originalSlug}`} target="_blank">
               <Eye className="h-4 w-4" />
               <span className="hidden sm:inline">Preview</span>
@@ -434,6 +434,7 @@ export default function EditContentPage() {
           <Button
             onClick={handleSubmit(onSubmit)}
             disabled={isSubmitting}
+            size="sm"
             className="gap-2"
           >
             {isSubmitting ? (
@@ -441,10 +442,15 @@ export default function EditContentPage() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSubmitting ? "Saving..." : "Update Content"}
+            {isSubmitting ? "Saving..." : "Update"}
           </Button>
         </div>
       </div>
+
+      {/* Mobile description */}
+      <p className="text-zinc-500 mt-1 text-sm sm:hidden">
+        Update your digital content
+      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Information */}
@@ -897,11 +903,11 @@ export default function EditContentPage() {
 
             {/* File Upload */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <h4 className="text-sm font-medium text-zinc-700">
                   Uploaded Files ({contentFiles.length})
                 </h4>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <Select value={selectedFileType} onValueChange={setSelectedFileType}>
                     <SelectTrigger className="h-9 w-[130px]">
                       <SelectValue />
@@ -1007,9 +1013,10 @@ export default function EditContentPage() {
         </Card>
 
         {/* Form Actions - Mobile */}
-        <div className="flex items-center justify-between pb-8 lg:hidden">
+        <div className="flex items-center justify-between pb-8 sm:hidden">
           <Button
             variant="outline"
+            size="sm"
             onClick={() => router.push("/admin/contents")}
           >
             Cancel
@@ -1017,6 +1024,7 @@ export default function EditContentPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
+            size="sm"
             className="gap-2"
           >
             {isSubmitting ? (
@@ -1024,7 +1032,7 @@ export default function EditContentPage() {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSubmitting ? "Saving..." : "Update Content"}
+            {isSubmitting ? "Saving..." : "Update"}
           </Button>
         </div>
       </form>

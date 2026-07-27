@@ -179,7 +179,7 @@ export default function PaymentPage() {
             {/* UPI ID */}
             <div className="space-y-2">
               <Label>UPI ID</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <Input value="admin@contenthub" readOnly className="bg-zinc-50" />
                 <Button
                   variant="outline"
@@ -194,13 +194,13 @@ export default function PaymentPage() {
             </div>
 
             {/* Instructions */}
-            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
-              <p className="text-sm text-amber-800">
-                1. Open any UPI app (Google Pay, PhonePe, Paytm)
-                2. Scan the QR code or enter the UPI ID
-                3. Pay the exact amount shown above
-                4. Enter the transaction ID below
-              </p>
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4">
+              <ol className="text-sm text-amber-800 space-y-1.5 list-decimal list-inside">
+                <li>Open any UPI app (Google Pay, PhonePe, Paytm)</li>
+                <li>Scan the QR code or enter the UPI ID</li>
+                <li>Pay the exact amount shown above</li>
+                <li>Enter the transaction ID below</li>
+              </ol>
             </div>
 
             {/* Transaction Form */}

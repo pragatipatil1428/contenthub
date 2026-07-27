@@ -91,7 +91,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-zinc-50">
         <div className="absolute inset-0 bg-grid-zinc-900/[0.03][0.03]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-32 lg:px-8">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -141,7 +141,7 @@ export default function HomePage() {
             <motion.div
               variants={fadeInUp}
               custom={4}
-              className="mt-12 flex items-center justify-center gap-8 text-sm text-zinc-500"
+              className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-zinc-500"
             >
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-1">
@@ -165,7 +165,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -174,7 +174,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-12"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold">
               Browse by Category
             </motion.h2>
             <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
@@ -211,7 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-zinc-50">
+      <section className="py-12 sm:py-20 bg-zinc-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -220,7 +220,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-12"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold">
               Why Choose ContentHub?
             </motion.h2>
             <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
@@ -232,7 +232,7 @@ export default function HomePage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid gap-8 md:grid-cols-4"
+            className="grid gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-4"
           >
             {features.map((feature, i) => {
               const Icon = feature.icon;
@@ -255,7 +255,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -264,7 +264,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-12"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold">
               What Our Users Say
             </motion.h2>
             <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
@@ -276,7 +276,7 @@ export default function HomePage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid gap-8 md:grid-cols-3"
+            className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3"
           >
             {testimonials.map((testimonial, i) => (
               <motion.div key={testimonial.name} variants={fadeInUp} custom={i}>
@@ -303,7 +303,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+      <section className="py-12 sm:py-20 bg-gradient-to-br from-purple-600 to-blue-600">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -311,7 +311,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold text-white sm:text-4xl">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl sm:text-4xl font-bold text-white">
               Ready to Start Exploring?
             </motion.h2>
             <motion.p variants={fadeInUp} className="mt-4 text-lg text-purple-100">
@@ -333,7 +333,7 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-zinc-50">
+      <section className="py-12 sm:py-20 bg-zinc-50">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -342,7 +342,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-12"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold">
               Frequently Asked Questions
             </motion.h2>
           </motion.div>

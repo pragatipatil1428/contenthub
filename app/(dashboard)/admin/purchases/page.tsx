@@ -73,91 +73,93 @@ export default function AdminPurchasesPage() {
       </Card>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Buyer</TableHead>
-                <TableHead>Content</TableHead>
-                <TableHead>Order #</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="w-[80px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 8 }).map((_, j) => (
-                      <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : filtered.length === 0 ? (
+        <CardContent className="p-0 overflow-x-auto">
+          <div className="min-w-[800px] md:min-w-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
-                    <ShoppingCart className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
-                    No purchases found
-                  </TableCell>
+                  <TableHead>Buyer</TableHead>
+                  <TableHead className="hidden sm:table-cell">Content</TableHead>
+                  <TableHead className="hidden md:table-cell">Order #</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden sm:table-cell">Payment</TableHead>
+                  <TableHead className="hidden md:table-cell">Date</TableHead>
+                  <TableHead className="w-[80px]">Actions</TableHead>
                 </TableRow>
-              ) : (
-                filtered.map((purchase) => {
-                  const content = purchase.items?.[0]?.content;
-                  const isApproved = purchase.paymentStatus === "APPROVED";
-
-                  return (
-                    <TableRow key={purchase.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-sm">{purchase.user?.name || "Unknown"}</p>
-                          <p className="text-xs text-zinc-500">{purchase.user?.email}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {content?.title || "N/A"}
-                      </TableCell>
-                      <TableCell className="text-xs text-zinc-500 font-mono">
-                        {purchase.orderNumber}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {formatPrice(purchase.finalAmount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            isApproved
-                              ? "success"
-                              : purchase.paymentStatus === "PENDING"
-                              ? "warning"
-                              : "destructive"
-                          }
-                          className="text-xs"
-                        >
-                          {isApproved ? "Completed" : purchase.paymentStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-zinc-500">
-                        {purchase.paymentMethod}
-                      </TableCell>
-                      <TableCell className="text-xs text-zinc-500 whitespace-nowrap">
-                        {formatDateTime(purchase.createdAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                          <Link href={`/success?purchaseId=${purchase.id}`} target="_blank">
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TableCell>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 8 }).map((_, j) => (
+                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      ))}
                     </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
+                      <ShoppingCart className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
+                      No purchases found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filtered.map((purchase) => {
+                    const content = purchase.items?.[0]?.content;
+                    const isApproved = purchase.paymentStatus === "APPROVED";
+
+                    return (
+                      <TableRow key={purchase.id}>
+                        <TableCell>
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">{purchase.user?.name || "Unknown"}</p>
+                            <p className="text-xs text-zinc-500 truncate">{purchase.user?.email}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm hidden sm:table-cell">
+                          <span className="truncate block max-w-[150px]">{content?.title || "N/A"}</span>
+                        </TableCell>
+                        <TableCell className="text-xs text-zinc-500 font-mono hidden md:table-cell">
+                          {purchase.orderNumber}
+                        </TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {formatPrice(purchase.finalAmount)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              isApproved
+                                ? "success"
+                                : purchase.paymentStatus === "PENDING"
+                                ? "warning"
+                                : "destructive"
+                            }
+                            className="text-xs whitespace-nowrap"
+                          >
+                            {isApproved ? "Done" : purchase.paymentStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-zinc-500 hidden sm:table-cell">
+                          {purchase.paymentMethod}
+                        </TableCell>
+                        <TableCell className="text-xs text-zinc-500 whitespace-nowrap hidden md:table-cell">
+                          {formatDateTime(purchase.createdAt)}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                            <Link href={`/success?purchaseId=${purchase.id}`} target="_blank">
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

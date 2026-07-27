@@ -96,104 +96,109 @@ export default function AdminPaymentsPage() {
       </Card>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Buyer</TableHead>
-                <TableHead>Content</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Transaction ID</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="w-[140px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 7 }).map((_, j) => (
-                      <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : filtered.length === 0 ? (
+        <CardContent className="p-0 overflow-x-auto">
+          <div className="min-w-[750px] md:min-w-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
-                    No payment requests found
-                  </TableCell>
+                  <TableHead>Buyer</TableHead>
+                  <TableHead className="hidden sm:table-cell">Content</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead className="hidden md:table-cell">Transaction ID</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden sm:table-cell">Date</TableHead>
+                  <TableHead className="w-[140px]">Actions</TableHead>
                 </TableRow>
-              ) : (
-                filtered.map((payment) => (
-                  <TableRow key={payment.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{payment.user?.name}</p>
-                        <p className="text-xs text-zinc-500">{payment.user?.email}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {payment.purchase?.items?.[0]?.content?.title || "N/A"}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {formatPrice(payment.amount)}
-                    </TableCell>
-                    <TableCell className="text-sm text-zinc-500">
-                      {payment.transactionId || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          payment.status === "APPROVED"
-                            ? "success"
-                            : payment.status === "REJECTED"
-                            ? "destructive"
-                            : "warning"
-                        }
-                      >
-                        {payment.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-zinc-500 text-sm">
-                      {formatDateTime(payment.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        {payment.purchase?.id && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                            <Link href={`/success?purchaseId=${payment.purchase.id}`} target="_blank">
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        )}
-                        {payment.status === "PENDING" && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 text-emerald-500"
-                              onClick={() => handleAction(payment.id, "approve")}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 text-red-500"
-                              onClick={() => handleAction(payment.id, "reject")}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 7 }).map((_, j) => (
+                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
+                      No payment requests found
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  filtered.map((payment) => (
+                    <TableRow key={payment.id}>
+                      <TableCell>
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{payment.user?.name}</p>
+                          <p className="text-xs text-zinc-500 truncate">{payment.user?.email}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <span className="truncate block max-w-[150px]">
+                          {payment.purchase?.items?.[0]?.content?.title || "N/A"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {formatPrice(payment.amount)}
+                      </TableCell>
+                      <TableCell className="text-sm text-zinc-500 hidden md:table-cell">
+                        {payment.transactionId || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            payment.status === "APPROVED"
+                              ? "success"
+                              : payment.status === "REJECTED"
+                              ? "destructive"
+                              : "warning"
+                          }
+                          className="whitespace-nowrap"
+                        >
+                          {payment.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-zinc-500 text-sm hidden sm:table-cell whitespace-nowrap">
+                        {formatDateTime(payment.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          {payment.purchase?.id && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                              <Link href={`/success?purchaseId=${payment.purchase.id}`} target="_blank">
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          )}
+                          {payment.status === "PENDING" && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 text-emerald-500"
+                                onClick={() => handleAction(payment.id, "approve")}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500"
+                                onClick={() => handleAction(payment.id, "reject")}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

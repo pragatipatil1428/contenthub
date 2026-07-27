@@ -121,3 +121,93 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
+/* Mobile responsive utilities */
+@media (max-width: 640px) {
+  .mobile-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  .mobile-table-wrapper table {
+    min-width: 600px;
+  }
+
+  .mobile-card-grid > * {
+    min-width: 0;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+
+  .mobile-gap-2 {
+    gap: 0.5rem !important;
+  }
+
+  .mobile-p-3 {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Sidebar backdrop overlay */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-backdrop {
+    display: none;
+  }
+}
+
+/* Touch-friendly button sizes */
+@media (max-width: 640px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Better mobile tables - responsive card view */
+@media (max-width: 768px) {
+  .responsive-table table {
+    font-size: 0.8125rem;
+  }
+  
+  .responsive-table th,
+  .responsive-table td {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Smooth transitions for responsive layout */
+@media (max-width: 640px) {
+  .mobile-stack-gap {
+    gap: 0.75rem;
+  }
+}
+

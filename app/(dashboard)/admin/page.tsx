@@ -60,14 +60,14 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-zinc-500 mt-1">Overview of your marketplace</p>
         </div>
         {stats?.pendingPurchases > 0 && (
           <Link href="/admin/payments">
-            <Button variant="outline" size="sm" className="gap-2 border-amber-200 text-amber-700 hover:bg-amber-50">
+            <Button variant="outline" size="sm" className="gap-2 border-amber-200 text-amber-700 hover:bg-amber-50 w-full sm:w-auto">
               <Clock className="h-4 w-4" />
               {stats.pendingPurchases} Pending
             </Button>
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
         <Link href="/admin/contents">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="p-4 flex items-center gap-3">

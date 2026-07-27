@@ -84,88 +84,90 @@ export default function AdminUsersPage() {
       </Card>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Purchases</TableHead>
-                <TableHead>Downloads</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead className="w-[120px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 8 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 7 }).map((_, j) => (
-                      <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : filtered.length === 0 ? (
+        <CardContent className="p-0 overflow-x-auto">
+          <div className="min-w-[700px] md:min-w-0">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
-                    No users found
-                  </TableCell>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden sm:table-cell">Purchases</TableHead>
+                  <TableHead className="hidden sm:table-cell">Downloads</TableHead>
+                  <TableHead className="hidden sm:table-cell">Joined</TableHead>
+                  <TableHead className="w-[120px]">Actions</TableHead>
                 </TableRow>
-              ) : (
-                filtered.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-xs text-zinc-500">{user.email}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.isOwnerAdmin ? "default" : "secondary"}>
-                        {user.isOwnerAdmin ? "Owner Admin" : "Buyer"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        {user.emailVerified ? (
-                          <CheckCircle className="h-4 w-4 text-emerald-500" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-zinc-300" />
-                        )}
-                        <Badge variant={user.isBlocked ? "destructive" : "success"}>
-                          {user.isBlocked ? "Blocked" : "Active"}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user._count?.purchases || 0}</TableCell>
-                    <TableCell>{user._count?.downloads || 0}</TableCell>
-                    <TableCell className="text-zinc-500 text-sm">
-                      {formatDate(user.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        {!user.isOwnerAdmin && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => handleAction(user.id, "block")}
-                            title={user.isBlocked ? "Unblock" : "Block"}
-                          >
-                            <Ban className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {user.isOwnerAdmin && (
-                          <span className="text-xs text-zinc-400 italic px-2">Protected</span>
-                        )}
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 7 }).map((_, j) => (
+                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
+                      No users found
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  filtered.map((u) => (
+                    <TableRow key={u.id}>
+                      <TableCell>
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{u.name}</p>
+                          <p className="text-xs text-zinc-500 truncate">{u.email}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={u.isOwnerAdmin ? "default" : "secondary"} className="whitespace-nowrap">
+                          {u.isOwnerAdmin ? "Admin" : "Buyer"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          {u.emailVerified ? (
+                            <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-zinc-300 shrink-0" />
+                          )}
+                          <Badge variant={u.isBlocked ? "destructive" : "success"} className="whitespace-nowrap">
+                            {u.isBlocked ? "Blocked" : "Active"}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">{u._count?.purchases || 0}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{u._count?.downloads || 0}</TableCell>
+                      <TableCell className="text-zinc-500 text-sm hidden sm:table-cell whitespace-nowrap">
+                        {formatDate(u.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          {!u.isOwnerAdmin && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleAction(u.id, "block")}
+                              title={u.isBlocked ? "Unblock" : "Block"}
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {u.isOwnerAdmin && (
+                            <span className="text-xs text-zinc-400 italic px-2">Protected</span>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

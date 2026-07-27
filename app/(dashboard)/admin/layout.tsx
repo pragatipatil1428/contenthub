@@ -65,6 +65,14 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
+      {/* Mobile Sidebar Backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
@@ -75,7 +83,7 @@ export default function AdminLayout({
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
               CH
             </div>
             {sidebarOpen && <span className="text-lg font-bold">Admin</span>}
@@ -153,7 +161,7 @@ export default function AdminLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
           {children}
         </main>
       </div>

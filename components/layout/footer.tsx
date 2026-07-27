@@ -4,10 +4,10 @@ export function Footer() {
   return (
     <footer className="border-t border-zinc-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          <div className="col-span-2 md:col-span-1">
+        <div className="grid grid-cols-2 gap-6 sm:gap-8 md:grid-cols-4">
+          <div className="col-span-2 sm:col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 text-white text-sm font-bold">
                 CH
               </div>
               <span className="text-lg font-bold">ContentHub</span>
