@@ -124,18 +124,38 @@ function ContentsPageContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [typeFilter, setTypeFilter] = useState(searchParams.get("type") || "ALL");
+  const [priceTypeFilter, setPriceTypeFilter] = useState(searchParams.get("priceType") || "");
   const [sort, setSort] = useState("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  // Sync URL search params to component state on mount/navigation
+  useEffect(() => {
+    const urlType = searchParams.get("type");
+    if (urlType && urlType !== typeFilter) {
+      setTypeFilter(urlType);
+    }
+    const urlPriceType = searchParams.get("priceType");
+    if (urlPriceType && urlPriceType !== priceTypeFilter) {
+      setPriceTypeFilter(urlPriceType);
+    }
+    const urlQ = searchParams.get("q");
+    if (urlQ !== null && urlQ !== search) {
+      setSearch(urlQ);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   useEffect(() => {
     fetchContents();
-  }, [typeFilter, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter, sort, priceTypeFilter]);
 
   const fetchContents = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (typeFilter && typeFilter !== "ALL") params.set("type", typeFilter);
+      if (priceTypeFilter) params.set("priceType", priceTypeFilter);
       if (sort) params.set("sort", sort);
       params.set("limit", "50");
 
@@ -158,7 +178,12 @@ function ContentsPageContent() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">
-          {typeFilter !== "ALL" ? (
+          {priceTypeFilter === "FREE" ? (
+            <span className="flex items-center gap-3">
+              Free Content
+              <Badge variant="secondary" className="text-sm font-normal">{filtered.length} items</Badge>
+            </span>
+          ) : typeFilter !== "ALL" ? (
             <span className="flex items-center gap-3">
               {contentTypeLabels[typeFilter] || typeFilter}
               <Badge variant="secondary" className="text-sm font-normal">{filtered.length} items</Badge>
@@ -168,7 +193,9 @@ function ContentsPageContent() {
           )}
         </h1>
         <p className="text-zinc-500 mt-2">
-          {typeFilter !== "ALL"
+          {priceTypeFilter === "FREE"
+            ? "Browse all free content available in our marketplace"
+            : typeFilter !== "ALL"
             ? `Browse all ${(contentTypeLabels[typeFilter] || typeFilter).toLowerCase()} available in our marketplace`
             : "Discover premium digital content curated for you"}
         </p>
