@@ -40,6 +40,15 @@ export async function GET(request: NextRequest) {
             },
           },
           invoice: true,
+          qrPayment: {
+            select: {
+              id: true,
+              status: true,
+              transactionId: true,
+              screenshots: { select: { id: true, url: true } },
+              createdAt: true,
+            },
+          },
         },
       }),
       prisma.purchase.count({ where: where as any }),

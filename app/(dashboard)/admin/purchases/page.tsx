@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingCart, Eye } from "lucide-react";
+import { Search, ShoppingCart, Eye, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,6 @@ export default function AdminPurchasesPage() {
   const [purchases, setPurchases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
   useEffect(() => {
     fetchPurchases();
   }, []);
@@ -36,26 +35,53 @@ export default function AdminPurchasesPage() {
     }
   };
 
-  const filtered = purchases.filter(
-    (p) =>
-      p.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
-      p.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
-      p.items?.[0]?.content?.title?.toLowerCase().includes(search.toLowerCase())
+  const handleAction = async (qrPaymentId: string, action: "approve" | "reject") => {
+    try {
+      const res = await fetch(`/api/payments/qr/${qrPaymentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        toast.success(`Payment ${action === "approve" ? "approved" : "rejected"} successfully`);
+        fetchPurchases();
+      } else {
+        toast.error(json.message);
+      }
+    } catch {
+      toast.error("Failed to process payment");
+    }
+  };
+
+  const filtered = purchases.filter((p) =>
+    p.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
+    p.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+    p.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
+    p.items?.[0]?.content?.title?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const qrPendingCount = purchases.filter((p) => p.qrPayment?.status === "PENDING").length;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">All Purchases</h1>
+          <h1 className="text-2xl font-bold">Purchases &amp; Payments</h1>
           <p className="text-zinc-500 mt-1">
-            View all purchases across all users
+            View all purchases, approve or reject payments
           </p>
         </div>
-        <Badge variant="secondary" className="text-sm px-4 py-1">
-          {purchases.length} Total
-        </Badge>
+        <div className="flex items-center gap-2">
+          {qrPendingCount > 0 && (
+            <Badge variant="warning" className="text-sm px-4 py-1">
+              {qrPendingCount} Need Approval
+            </Badge>
+          )}
+          <Badge variant="secondary" className="text-sm px-4 py-1">
+            {purchases.length} Total
+          </Badge>
+        </div>
       </div>
 
       <Card>
@@ -74,7 +100,7 @@ export default function AdminPurchasesPage() {
 
       <Card>
         <CardContent className="p-0 overflow-x-auto">
-          <div className="min-w-[800px] md:min-w-0">
+          <div className="min-w-[850px] md:min-w-0">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -85,7 +111,7 @@ export default function AdminPurchasesPage() {
                   <TableHead>Status</TableHead>
                   <TableHead className="hidden sm:table-cell">Payment</TableHead>
                   <TableHead className="hidden md:table-cell">Date</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
+                  <TableHead className="w-[140px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,6 +134,7 @@ export default function AdminPurchasesPage() {
                   filtered.map((purchase) => {
                     const content = purchase.items?.[0]?.content;
                     const isApproved = purchase.paymentStatus === "APPROVED";
+                    const qrPending = purchase.qrPayment?.status === "PENDING";
 
                     return (
                       <TableRow key={purchase.id}>
@@ -142,16 +169,43 @@ export default function AdminPurchasesPage() {
                         </TableCell>
                         <TableCell className="text-xs text-zinc-500 hidden sm:table-cell">
                           {purchase.finalAmount === 0 ? "Free" : purchase.paymentMethod}
+                          {qrPending && (
+                            <span className="ml-1 text-amber-600 font-medium">(QR)</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-xs text-zinc-500 whitespace-nowrap hidden md:table-cell">
                           {formatDateTime(purchase.createdAt)}
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                            <Link href={`/success?purchaseId=${purchase.id}`} target="_blank">
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                              <Link href={`/success?purchaseId=${purchase.id}`} target="_blank">
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            {qrPending && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
+                                  onClick={() => handleAction(purchase.qrPayment.id, "approve")}
+                                  title="Approve payment"
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => handleAction(purchase.qrPayment.id, "reject")}
+                                  title="Reject payment"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
