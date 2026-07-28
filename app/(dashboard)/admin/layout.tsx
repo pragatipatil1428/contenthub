@@ -63,7 +63,7 @@ export default function AdminLayout({
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50">
+    <div className="fixed inset-0 flex bg-zinc-50">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -160,7 +160,7 @@ export default function AdminLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+        <main className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 lg:p-6">
           {children}
         </main>
       </div>
