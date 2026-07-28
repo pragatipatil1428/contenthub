@@ -99,6 +99,7 @@ export default function AdminContentsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Price</TableHead>
@@ -112,20 +113,21 @@ export default function AdminContentsPage() {
                 {loading ? (
                   Array.from({ length: 8 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 7 }).map((_, j) => (
+                      {Array.from({ length: 8 }).map((_, j) => (
                         <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
+                    <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
                       No content found. Start by adding your first content.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((content) => (
+                  filtered.map((content, idx) => (
                     <TableRow key={content.id}>
+                      <TableCell className="text-xs text-zinc-400 text-center">{idx + 1}</TableCell>
                       <TableCell className="font-medium">
                         <Link
                           href={`/admin/contents/${content.slug}/edit?id=${content.id}`}

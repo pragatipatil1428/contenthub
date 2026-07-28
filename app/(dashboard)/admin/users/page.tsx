@@ -89,6 +89,7 @@ export default function AdminUsersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>User</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
@@ -102,20 +103,21 @@ export default function AdminUsersPage() {
                 {loading ? (
                   Array.from({ length: 8 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 7 }).map((_, j) => (
-                        <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
+                      {Array.from({ length: 8 }).map((_, j) => (
+                        <TableCell key={j}>                      <Skeleton className="h-5 w-full" /></TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12 text-zinc-500">
+                    <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
                       No users found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((u) => (
+                  filtered.map((u, idx) => (
                     <TableRow key={u.id}>
+                      <TableCell className="text-xs text-zinc-400 text-center">{idx + 1}</TableCell>
                       <TableCell>
                         <div className="min-w-0">
                           <p className="font-medium truncate">{u.name}</p>

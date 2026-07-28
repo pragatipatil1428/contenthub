@@ -190,6 +190,7 @@ export default function AdminCategoriesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead className="hidden sm:table-cell">Slug</TableHead>
                   <TableHead>Content</TableHead>
@@ -201,20 +202,21 @@ export default function AdminCategoriesPage() {
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 5 }).map((_, j) => (
+                      {Array.from({ length: 6 }).map((_, j) => (
                         <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : categories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12 text-zinc-500">
+                    <TableCell colSpan={6} className="text-center py-12 text-zinc-500">
                       No categories yet. Create your first category.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  categories.map((cat) => (
+                  categories.map((cat, idx) => (
                     <TableRow key={cat.id}>
+                      <TableCell className="text-xs text-zinc-400 text-center">{idx + 1}</TableCell>
                       <TableCell className="font-medium">{cat.name}</TableCell>
                       <TableCell className="text-zinc-500 text-sm hidden sm:table-cell">{cat.slug}</TableCell>
                       <TableCell>{cat._count?.contents || 0}</TableCell>

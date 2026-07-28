@@ -157,6 +157,7 @@ export default function AdminPurchasesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>Buyer</TableHead>
                   <TableHead className="hidden sm:table-cell">Content</TableHead>
                   <TableHead className="hidden md:table-cell">Order #</TableHead>
@@ -171,26 +172,27 @@ export default function AdminPurchasesPage() {
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 8 }).map((_, j) => (
+                      {Array.from({ length: 9 }).map((_, j) => (
                         <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
+                    <TableCell colSpan={9} className="text-center py-12 text-zinc-500">
                       <ShoppingCart className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
                       No purchases found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((purchase) => {
+                  filtered.map((purchase, idx) => {
                     const content = purchase.items?.[0]?.content;
                     const isApproved = purchase.paymentStatus === "APPROVED";
                     const qrPending = purchase.qrPayment?.status === "PENDING";
 
                     return (
                       <TableRow key={purchase.id}>
+                        <TableCell className="text-xs text-zinc-400 text-center">{idx + 1}</TableCell>
                         <TableCell>
                           <div className="min-w-0">
                             <p className="font-medium text-sm truncate">{purchase.user?.name || "Unknown"}</p>
