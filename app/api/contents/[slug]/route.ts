@@ -129,6 +129,21 @@ export async function DELETE(
       );
     }
 
+    // Check if content has any purchases
+    const purchaseCount = await prisma.purchaseItem.count({
+      where: { contentId: existing.id },
+    });
+
+    if (purchaseCount > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Cannot delete "${existing.title}" — it has ${purchaseCount} purchase(s). Remove purchase records first or archive the content instead.`,
+        },
+        { status: 400 }
+      );
+    }
+
     await prisma.content.delete({ where: { slug } });
 
     return NextResponse.json({
