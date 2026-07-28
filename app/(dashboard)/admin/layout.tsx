@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FileText, Users, ShoppingCart,
-  BarChart3, Bell, Settings, ChevronLeft, LogOut, Menu,
+  BarChart3, Settings, ChevronLeft, LogOut, Menu,
   FolderTree
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,6 @@ const sidebarItems = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/purchases", label: "Purchases", icon: ShoppingCart },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

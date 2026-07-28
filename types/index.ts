@@ -4,7 +4,6 @@ export type {
   PriceType,
   PaymentMethod,
   PaymentStatus,
-  NotificationType,
 } from "@/app/generated/prisma";
 
 export interface DashboardStats {

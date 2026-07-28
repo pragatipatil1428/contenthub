@@ -58,17 +58,6 @@ export async function PUT(
         });
       }
 
-      // Create notification for buyer
-      await prisma.notification.create({
-        data: {
-          userId: qrPayment.userId,
-          title: "Purchase Approved!",
-          message: "Your purchase has been approved. You can now access your content.",
-          type: "PURCHASE_APPROVED",
-          link: `/dashboard/purchases`,
-        },
-      });
-
       return NextResponse.json({
         success: true,
         message: "Payment approved successfully",

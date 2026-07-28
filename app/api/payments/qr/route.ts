@@ -49,16 +49,6 @@ export async function POST(request: NextRequest) {
       data: { paymentStatus: "PENDING" },
     });
 
-    // Create notification for admin
-    await prisma.notification.create({
-      data: {
-        title: "New Payment Pending",
-        message: `Payment of ₹${purchase.finalAmount} is pending approval. Transaction ID: ${transactionId}`,
-        type: "PAYMENT_PENDING",
-        link: `/admin/purchases`,
-      },
-    });
-
     return NextResponse.json({ success: true, data: qrPayment });
   } catch (error) {
     const authError = handleAuthError(error);
