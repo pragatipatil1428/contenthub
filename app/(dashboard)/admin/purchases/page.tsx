@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingCart, Eye, Check, X } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Search, ShoppingCart, Eye, Check, X, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -15,9 +16,25 @@ import { formatDateTime, formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function AdminPurchasesPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const statusFilter = searchParams.get("status") || "all";
   const [purchases, setPurchases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState(statusFilter);
+
+  const setFilterParam = (value: string) => {
+    setFilter(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "all") {
+      params.delete("status");
+    } else {
+      params.set("status", value);
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  };
   useEffect(() => {
     fetchPurchases();
   }, []);
@@ -54,14 +71,20 @@ export default function AdminPurchasesPage() {
     }
   };
 
-  const filtered = purchases.filter((p) =>
-    p.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    p.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
-    p.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
-    p.items?.[0]?.content?.title?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = purchases.filter((p) => {
+    const matchesSearch =
+      p.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+      p.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      p.items?.[0]?.content?.title?.toLowerCase().includes(search.toLowerCase());
+    if (filter === "pending") return matchesSearch && p.paymentStatus === "PENDING";
+    if (filter === "failed") return matchesSearch && p.paymentStatus === "FAILED";
+    return matchesSearch;
+  });
 
   const qrPendingCount = purchases.filter((p) => p.qrPayment?.status === "PENDING").length;
+  const pendingCount = purchases.filter((p) => p.paymentStatus === "PENDING").length;
+  const failedCount = purchases.filter((p) => p.paymentStatus === "FAILED").length;
 
   return (
     <div className="space-y-6">
@@ -86,14 +109,44 @@ export default function AdminPurchasesPage() {
 
       <Card>
         <CardContent className="p-4">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <Input
-              placeholder="Search by user, order, or content..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <Input
+                placeholder="Search by user, order, or content..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                variant={filter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("all")}
+                className="text-xs"
+              >
+                All ({purchases.length})
+              </Button>
+              <Button
+                variant={filter === "pending" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("pending")}
+                className="text-xs gap-1.5"
+              >
+                <Clock className="h-3 w-3" />
+                Pending ({pendingCount})
+              </Button>
+              <Button
+                variant={filter === "failed" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("failed")}
+                className="text-xs gap-1.5"
+              >
+                <XCircle className="h-3 w-3" />
+                Failed ({failedCount})
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

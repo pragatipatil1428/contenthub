@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         title: "New Payment Pending",
         message: `Payment of ₹${purchase.finalAmount} is pending approval. Transaction ID: ${transactionId}`,
         type: "PAYMENT_PENDING",
-        link: `/admin/payments`,
+        link: `/admin/purchases`,
       },
     });
 

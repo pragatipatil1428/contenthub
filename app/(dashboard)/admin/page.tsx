@@ -66,7 +66,7 @@ export default function AdminDashboard() {
           <p className="text-zinc-500 mt-1">Overview of your marketplace</p>
         </div>
         {stats?.pendingPurchases > 0 && (
-          <Link href="/admin/payments">
+          <Link href="/admin/purchases?status=pending">
             <Button variant="outline" size="sm" className="gap-2 border-amber-200 text-amber-700 hover:bg-amber-50 w-full sm:w-auto">
               <Clock className="h-4 w-4" />
               {stats.pendingPurchases} Pending
@@ -201,15 +201,15 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/admin/payments">
+        <Link href="/admin/purchases">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="p-4 flex items-center gap-3">
               <div className="bg-amber-50 text-amber-600 rounded-lg p-2">
                 <DollarSign className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-medium">Payments</p>
-                <p className="text-xs text-zinc-500">Approve payments</p>
+                <p className="text-sm font-medium">Purchases</p>
+                <p className="text-xs text-zinc-500">Manage purchases</p>
               </div>
             </CardContent>
           </Card>
