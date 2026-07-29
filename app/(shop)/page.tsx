@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, TrendingUp, Clock, Shield, Zap, Sparkles, Play, Download, FileText, Music, BookOpen, Image, Video } from "lucide-react";
+import { ArrowRight, Star, TrendingUp, Shield, Zap, Sparkles, Download,
+  FileText, Image, Music, Video, BookOpen, Code, PenTool, FileSpreadsheet, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,15 +26,6 @@ const staggerContainer = {
     transition: { staggerChildren: 0.1 },
   },
 };
-
-const categories = [
-  { name: "Videos", icon: Video, color: "from-red-500 to-orange-500", count: "2,450+" },
-  { name: "Music", icon: Music, color: "from-purple-500 to-pink-500", count: "1,800+" },
-  { name: "PDFs", icon: FileText, color: "from-blue-500 to-cyan-500", count: "3,200+" },
-  { name: "Courses", icon: BookOpen, color: "from-emerald-500 to-teal-500", count: "890+" },
-  { name: "Images", icon: Image, color: "from-amber-500 to-yellow-500", count: "5,600+" },
-  { name: "Templates", icon: Sparkles, color: "from-indigo-500 to-violet-500", count: "1,200+" },
-];
 
 const features = [
   {
@@ -164,7 +156,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Content Types Section */}
       <section className="py-12 sm:py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -175,10 +167,10 @@ export default function HomePage() {
             className="text-center mb-12"
           >
             <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl font-bold">
-              Browse by Category
+              Browse by Type
             </motion.h2>
             <motion.p variants={fadeInUp} className="mt-4 text-zinc-500">
-              Explore our extensive collection across every category
+              Explore our extensive collection across all content types
             </motion.p>
           </motion.div>
           <motion.div
@@ -186,20 +178,32 @@ export default function HomePage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6"
+            className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
           >
-            {categories.map((category, i) => {
-              const Icon = category.icon;
+            {[
+              { name: "Images", icon: Image, color: "from-amber-500 to-yellow-500", slug: "IMAGE" },
+              { name: "Videos", icon: Video, color: "from-red-500 to-orange-500", slug: "VIDEO" },
+              { name: "Music", icon: Music, color: "from-purple-500 to-pink-500", slug: "AUDIO" },
+              { name: "PDFs", icon: FileText, color: "from-blue-500 to-cyan-500", slug: "PDF" },
+              { name: "Courses", icon: BookOpen, color: "from-emerald-500 to-teal-500", slug: "COURSE" },
+              { name: "Templates", icon: Layers, color: "from-indigo-500 to-violet-500", slug: "TEMPLATE" },
+              { name: "Ebooks", icon: BookOpen, color: "from-rose-500 to-pink-500", slug: "EBOOK" },
+              { name: "Software", icon: Code, color: "from-cyan-500 to-blue-500", slug: "SOFTWARE" },
+              { name: "Documents", icon: FileText, color: "from-zinc-500 to-zinc-600", slug: "DOCUMENT" },
+              { name: "Spreadsheets", icon: FileSpreadsheet, color: "from-green-500 to-emerald-500", slug: "EXCEL" },
+              { name: "Design", icon: PenTool, color: "from-fuchsia-500 to-purple-500", slug: "POWERPOINT" },
+              { name: "Articles", icon: FileText, color: "from-sky-500 to-indigo-500", slug: "TEXT_ARTICLE" },
+            ].map((type, i) => {
+              const Icon = type.icon;
               return (
-                <motion.div key={category.name} variants={fadeInUp} custom={i}>
-                  <Link href={`/contents?type=${category.name.toUpperCase()}`}>
+                <motion.div key={type.name} variants={fadeInUp} custom={i}>
+                  <Link href={`/contents${type.slug ? `?type=${type.slug}` : ""}`}>
                     <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
-                      <CardContent className="flex flex-col items-center gap-3 p-6">
-                        <div className={`rounded-2xl bg-gradient-to-br ${category.color} p-3 text-white`}>
-                          <Icon className="h-6 w-6" />
+                      <CardContent className="flex flex-col items-center gap-3 p-5 sm:p-6">
+                        <div className={`rounded-2xl bg-gradient-to-br ${type.color} p-3 text-white`}>
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        <span className="text-sm font-medium">{category.name}</span>
-                        <span className="text-xs text-zinc-400">{category.count}</span>
+                        <span className="text-sm font-medium">{type.name}</span>
                       </CardContent>
                     </Card>
                   </Link>

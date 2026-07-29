@@ -13,8 +13,6 @@ export async function GET(
     const content = await prisma.content.findUnique({
       where: { slug },
       include: {
-        category: true,
-        subCategory: true,
         tags: true,
         files: true,
         screenshots: true,
@@ -93,7 +91,6 @@ export async function PUT(
           : undefined,
       },
       include: {
-        category: true,
         tags: true,
       },
     });
@@ -138,7 +135,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          message: `Cannot delete "${existing.title}" — it has ${purchaseCount} purchase(s). Remove purchase records first or archive the content instead.`,
+          message: `Cannot delete "${existing.title}" — it has ${purchaseCount} purchase(s). `,
         },
         { status: 400 }
       );

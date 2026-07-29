@@ -219,7 +219,7 @@ export default function ContentDetailPage() {
                   ["Author", content.author],
                   ["File Size", fileSizeFormat(content.fileSize)],
                   ["Duration", content.duration ? `${content.duration} min` : "—"],
-                  ["Category", content.category?.name || "—"],
+
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between py-2 border-b border-zinc-100">
                     <span className="text-zinc-500">{label}</span>

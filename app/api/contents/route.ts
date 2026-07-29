@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("q") || "";
-    const categoryId = searchParams.get("category") || "";
     const type = searchParams.get("type") || "";
     const priceType = searchParams.get("priceType") || "";
     const sort = searchParams.get("sort") || "newest";
@@ -23,7 +22,6 @@ export async function GET(request: NextRequest) {
 
     if (status) where.status = status;
     if (search) where.title = { contains: search, mode: "insensitive" };
-    if (categoryId) where.categoryId = categoryId;
     if (type) where.contentType = type;
     if (priceType) where.priceType = priceType;
     if (featured === "true") where.isFeatured = true;
@@ -43,8 +41,6 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         include: {
-          category: { select: { id: true, name: true, slug: true } },
-          subCategory: { select: { id: true, name: true } },
           tags: true,
           _count: { select: { reviews: true } },
         },
@@ -101,7 +97,6 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        category: true,
         tags: true,
       },
     });

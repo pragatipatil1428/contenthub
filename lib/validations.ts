@@ -59,8 +59,6 @@ export const contentSchema = z.object({
   originalPrice: z.number().optional().nullable(),
   discountPrice: z.number().optional().nullable(),
   currency: z.string().default("INR"),
-  categoryId: z.string().optional().nullable(),
-  subCategoryId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
   language: z.string().optional(),
   author: z.string().optional(),
@@ -72,21 +70,6 @@ export const contentSchema = z.object({
   isPopular: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   isRecommended: z.boolean().optional(),
-});
-
-export const categorySchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-  seoTitle: z.string().optional(),
-  seoDesc: z.string().optional(),
-});
-
-export const subCategorySchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-  categoryId: z.string(),
 });
 
 export const qrPaymentSchema = z.object({
@@ -110,6 +93,5 @@ export const settingSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 export type ContentInput = z.infer<typeof contentSchema>;
-export type CategoryInput = z.infer<typeof categorySchema>;
 export type ProfileInput = z.infer<typeof profileSchema>;
 export type QRPaymentInput = z.infer<typeof qrPaymentSchema>;

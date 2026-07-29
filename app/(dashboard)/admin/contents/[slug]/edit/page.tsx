@@ -55,7 +55,6 @@ export default function EditContentPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(false);
@@ -201,16 +200,6 @@ export default function EditContentPage() {
     return <File className="h-5 w-5 text-zinc-500" />;
   };
 
-  // Fetch categories
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.success) setCategories(json.data);
-      })
-      .catch(() => toast.error("Failed to load categories"));
-  }, []);
-
   // Fetch existing content
   useEffect(() => {
     if (!slug) return;
@@ -235,8 +224,7 @@ export default function EditContentPage() {
             originalPrice: c.originalPrice ?? undefined,
             discountPrice: c.discountPrice ?? undefined,
             currency: c.currency || "INR",
-            categoryId: c.categoryId || "",
-            subCategoryId: c.subCategoryId || "",
+
             language: c.language || "",
             author: c.author || "",
             duration: c.duration ?? undefined,
@@ -327,8 +315,6 @@ export default function EditContentPage() {
         tags,
         originalPrice: data.priceType === "PAID" ? data.originalPrice : null,
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
-        categoryId: data.categoryId || null,
-        subCategoryId: data.subCategoryId || null,
         duration: data.duration || null,
         releaseDate: data.releaseDate || null,
       };
@@ -353,8 +339,6 @@ export default function EditContentPage() {
       setIsSubmitting(false);
     }
   };
-
-  const selectedCategory = categories.find((c) => c.id === watch("categoryId"));
 
   // Loading state
   if (isLoading) {
@@ -645,50 +629,6 @@ export default function EditContentPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="categoryId">Category</Label>
-              <Select
-                value={watch("categoryId") || ""}
-                onValueChange={(v) => setValue("categoryId", v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No category</SelectItem>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Sub Category */}
-            {selectedCategory && selectedCategory.subCategories?.length > 0 && (
-              <div className="space-y-2">
-                <Label htmlFor="subCategoryId">Sub Category</Label>
-                <Select
-                  value={watch("subCategoryId") || ""}
-                  onValueChange={(v) => setValue("subCategoryId", v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sub category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {selectedCategory.subCategories.map((sub: any) => (
-                      <SelectItem key={sub.id} value={sub.id}>
-                        {sub.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
 
             {/* Tags */}
             <div className="space-y-2">

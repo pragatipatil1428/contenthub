@@ -33,14 +33,8 @@ export interface PurchaseData {
   purchases: number;
 }
 
-export interface CategoryData {
-  name: string;
-  count: number;
-}
-
 export interface SearchParams {
   q?: string;
-  category?: string;
   type?: string;
   priceType?: string;
   sort?: string;

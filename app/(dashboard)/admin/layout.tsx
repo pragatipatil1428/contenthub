@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, FileText, Users, ShoppingCart,
-  BarChart3, Settings, ChevronLeft, LogOut, Menu,
-  FolderTree
+  BarChart3, Settings, ChevronLeft, LogOut, Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,6 @@ import { toast } from "sonner";
 const sidebarItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/contents", label: "Content", icon: FileText },
-  { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/purchases", label: "Purchases", icon: ShoppingCart },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },

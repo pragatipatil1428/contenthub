@@ -37,10 +37,11 @@ export async function GET() {
       }
     }
 
-    // Category distribution
-    const categoryData = await prisma.category.findMany({
-      include: { _count: { select: { contents: true } } },
-      orderBy: { name: "asc" },
+    // Content by type
+    const contentByType = await prisma.content.groupBy({
+      by: ["contentType"],
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
     });
 
     // Recent purchases
@@ -65,10 +66,7 @@ export async function GET() {
           revenue: data.revenue,
           purchases: data.count,
         })),
-        categories: categoryData.map((c) => ({
-          name: c.name,
-          count: c._count.contents,
-        })),
+        contentByType,
         recentPurchases,
       },
     });

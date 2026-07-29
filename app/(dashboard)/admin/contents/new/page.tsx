@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Loader2, Plus, X, Save, Image,
-  FileText, Tag, DollarSign, Check
+  FileText, Tag, DollarSign, Check, Upload, Download,
+  File, Music, Film, FileArchive, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { contentSchema, type ContentInput } from "@/lib/validations";
-import { slugify } from "@/lib/utils";
+import { slugify, fileSizeFormat } from "@/lib/utils";
 import { toast } from "sonner";
 
 const contentTypeLabels: Record<string, string> = {
@@ -48,8 +49,15 @@ const priceTypeOptions = [
 export default function NewContentPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
+  const [previewVideoUrl, setPreviewVideoUrl] = useState("");
+  const [fileUrl, setFileUrl] = useState("");
+  const [fileSize, setFileSize] = useState<number | null>(null);
+  const [contentFiles, setContentFiles] = useState<any[]>([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedFileType, setSelectedFileType] = useState("main");
   const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(true);
   const [customSlug, setCustomSlug] = useState("");
@@ -79,6 +87,38 @@ export default function NewContentPage() {
   const watchPriceType = watch("priceType");
   const watchContentType = watch("contentType");
 
+  // Content type -> accepted file formats mapping
+  const contentTypeAcceptMap: Record<string, { accept: string; hint: string }> = {
+    AUDIO: { accept: ".mp3,.wav,.flac,.aac,.ogg,.wma,.m4a,.opus", hint: "MP3, WAV, FLAC, AAC, OGG" },
+    VIDEO: { accept: ".mp4,.avi,.mov,.mkv,.wmv,.webm,.flv", hint: "MP4, AVI, MOV, MKV, WEBM" },
+    MOVIE: { accept: ".mp4,.mkv,.avi,.webm", hint: "MP4, MKV, AVI, WEBM" },
+    IMAGE: { accept: ".jpg,.jpeg,.png,.webp,.gif,.svg,.bmp,.tiff", hint: "JPG, PNG, WEBP, GIF, SVG" },
+    PDF: { accept: ".pdf", hint: "PDF" },
+    EBOOK: { accept: ".pdf,.epub,.mobi,.azw3", hint: "PDF, EPUB, MOBI" },
+    DOCUMENT: { accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt", hint: "PDF, DOC, XLS, PPT, TXT" },
+    WORD: { accept: ".doc,.docx", hint: "DOC, DOCX" },
+    EXCEL: { accept: ".xls,.xlsx,.csv", hint: "XLS, XLSX, CSV" },
+    POWERPOINT: { accept: ".ppt,.pptx", hint: "PPT, PPTX" },
+    ZIP: { accept: ".zip,.rar,.7z,.tar,.gz", hint: "ZIP, RAR, 7Z, TAR" },
+    SOFTWARE: { accept: ".exe,.msi,.dmg,.apk,.deb,.rpm", hint: "EXE, MSI, DMG, APK" },
+    TEMPLATE: { accept: ".zip,.rar,.tar.gz", hint: "ZIP, RAR (template files)" },
+    COURSE: { accept: ".mp4,.pdf,.zip,.mp3", hint: "MP4, PDF, ZIP, MP3" },
+    MIXED_FILES: { accept: "", hint: "Any file type" },
+    EXTERNAL_LINK: { accept: "", hint: "External links don't need file uploads" },
+    TEXT_ARTICLE: { accept: ".txt,.md,.html,.pdf", hint: "TXT, MD, HTML, PDF" },
+  };
+
+  const currentFileConfig = contentTypeAcceptMap[watchContentType] || { accept: "", hint: "Any file type" };
+
+  const getFileIcon = (mimeType?: string) => {
+    if (!mimeType) return <File className="h-5 w-5" />;
+    if (mimeType.startsWith("audio")) return <Music className="h-5 w-5 text-purple-500" />;
+    if (mimeType.startsWith("video")) return <Film className="h-5 w-5 text-blue-500" />;
+    if (mimeType.startsWith("image")) return <Image className="h-5 w-5 text-emerald-500" />;
+    if (mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("tar")) return <FileArchive className="h-5 w-5 text-amber-500" />;
+    return <File className="h-5 w-5 text-zinc-500" />;
+  };
+
   // Auto-generate slug from title
   useEffect(() => {
     if (autoSlug && watchTitle) {
@@ -86,15 +126,69 @@ export default function NewContentPage() {
     }
   }, [watchTitle, autoSlug]);
 
-  // Fetch categories
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.success) setCategories(json.data);
-      })
-      .catch(() => toast.error("Failed to load categories"));
-  }, []);
+  // Handle file upload
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const slug = customSlug || slugify(watchTitle || "untitled");
+
+    setUploadingFile(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", selectedFileType);
+
+      const res = await fetch(`/api/contents/${slug}/files`, {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        toast.success(`"${file.name}" uploaded`);
+        fetchContentFiles();
+      } else {
+        toast.error(json.message || "Upload failed");
+      }
+    } catch {
+      toast.error("Failed to upload file");
+    } finally {
+      setUploadingFile(false);
+      e.target.value = "";
+    }
+  };
+
+  // Handle file delete
+  const handleFileDelete = async (fileId: string, filename: string) => {
+    if (!confirm(`Delete "${filename}"?`)) return;
+    const slug = customSlug || slugify(watchTitle || "untitled");
+    try {
+      const res = await fetch(`/api/contents/${slug}/files?id=${fileId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.success) {
+        toast.success("File deleted");
+        fetchContentFiles();
+      } else {
+        toast.error(json.message || "Delete failed");
+      }
+    } catch {
+      toast.error("Failed to delete file");
+    }
+  };
+
+  // Fetch content files
+  const fetchContentFiles = async () => {
+    const slug = customSlug || slugify(watchTitle || "untitled");
+    try {
+      const res = await fetch(`/api/contents/${slug}/files`);
+      const json = await res.json();
+      if (json.success) setContentFiles(json.data);
+    } catch {
+      console.error("Failed to fetch files");
+    }
+  };
 
   const addTag = () => {
     const trimmed = tagInput.trim();
@@ -121,11 +215,14 @@ export default function NewContentPage() {
       const payload = {
         ...data,
         slug: customSlug || slugify(data.title),
+        thumbnail: thumbnailUrl || null,
+        previewImage: previewImageUrl || null,
+        previewVideo: previewVideoUrl || null,
+        fileUrl: fileUrl || null,
+        fileSize: fileSize || null,
         tags,
         originalPrice: data.priceType === "PAID" ? data.originalPrice : null,
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
-        categoryId: data.categoryId || null,
-        subCategoryId: data.subCategoryId || null,
         duration: data.duration || null,
         releaseDate: data.releaseDate || null,
       };
@@ -150,8 +247,6 @@ export default function NewContentPage() {
       setIsSubmitting(false);
     }
   };
-
-  const selectedCategory = categories.find((c) => c.id === watch("categoryId"));
 
   return (
     <motion.div
@@ -396,50 +491,6 @@ export default function NewContentPage() {
               </Select>
             </div>
 
-            {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="categoryId">Category</Label>
-              <Select
-                value={watch("categoryId") || ""}
-                onValueChange={(v) => setValue("categoryId", v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No category</SelectItem>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Sub Category */}
-            {selectedCategory && selectedCategory.subCategories?.length > 0 && (
-              <div className="space-y-2">
-                <Label htmlFor="subCategoryId">Sub Category</Label>
-                <Select
-                  value={watch("subCategoryId") || ""}
-                  onValueChange={(v) => setValue("subCategoryId", v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sub category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {selectedCategory.subCategories.map((sub: any) => (
-                      <SelectItem key={sub.id} value={sub.id}>
-                        {sub.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             {/* Tags */}
             <div className="space-y-2">
               <Label>Tags</Label>
@@ -594,6 +645,168 @@ export default function NewContentPage() {
                   </div>
                 </label>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Files & Media */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Upload className="h-5 w-5 text-purple-500" />
+              Files & Media
+            </CardTitle>
+            <CardDescription>
+              Upload files and set media URLs for this content
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Media URL Fields */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-zinc-700">Media URLs</h4>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Thumbnail URL</Label>
+                  <Input
+                    placeholder="https://example.com/thumb.jpg"
+                    value={thumbnailUrl}
+                    onChange={(e) => setThumbnailUrl(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Preview Image URL</Label>
+                  <Input
+                    placeholder="https://example.com/preview.jpg"
+                    value={previewImageUrl}
+                    onChange={(e) => setPreviewImageUrl(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Preview Video URL</Label>
+                  <Input
+                    placeholder="https://example.com/preview.mp4"
+                    value={previewVideoUrl}
+                    onChange={(e) => setPreviewVideoUrl(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Main File URL</Label>
+                  <Input
+                    placeholder="https://example.com/file.pdf"
+                    value={fileUrl}
+                    onChange={(e) => setFileUrl(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-zinc-200" />
+
+            {/* File Upload */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <h4 className="text-sm font-medium text-zinc-700">
+                  Uploaded Files ({contentFiles.length})
+                </h4>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Select value={selectedFileType} onValueChange={setSelectedFileType}>
+                    <SelectTrigger className="h-9 w-[130px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="main">Main File</SelectItem>
+                      <SelectItem value="preview">Preview</SelectItem>
+                      <SelectItem value="thumbnail">Thumbnail</SelectItem>
+                      <SelectItem value="sample">Sample</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept={currentFileConfig.accept}
+                      onChange={handleFileUpload}
+                      disabled={uploadingFile}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      disabled={uploadingFile}
+                      asChild
+                    >
+                      <span>
+                        {uploadingFile ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                        {uploadingFile ? "Uploading..." : "Upload File"}
+                      </span>
+                    </Button>
+                  </label>
+                </div>
+              </div>
+
+              {/* Accepted formats hint */}
+              {currentFileConfig.hint && (
+                <p className="text-xs text-zinc-400">
+                  Accepted formats: <span className="font-medium text-zinc-500">{currentFileConfig.hint}</span>
+                  {" "}· Max 50MB per file
+                </p>
+              )}
+
+              {/* File List */}
+              {contentFiles.length === 0 ? (
+                <div className="rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center">
+                  {watchContentType === "AUDIO" ? (
+                    <Music className="mx-auto h-8 w-8 text-zinc-300" />
+                  ) : watchContentType === "VIDEO" || watchContentType === "MOVIE" ? (
+                    <Film className="mx-auto h-8 w-8 text-zinc-300" />
+                  ) : (
+                    <Upload className="mx-auto h-8 w-8 text-zinc-300" />
+                  )}
+                  <p className="mt-2 text-sm text-zinc-500">No files uploaded yet</p>
+                  <p className="text-xs text-zinc-400">Save the content first, then upload files here or in the edit page</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {contentFiles.map((f: any) => (
+                    <div
+                      key={f.id}
+                      className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {getFileIcon(f.mimeType)}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{f.filename}</p>
+                          <div className="flex items-center gap-2 text-xs text-zinc-500">
+                            <span className="capitalize">{f.type}</span>
+                            {f.size && <span>{fileSizeFormat(f.size)}</span>}
+                            <a
+                              href={f.url}
+                              target="_blank"
+                              className="text-purple-600 hover:text-purple-500"
+                            >
+                              <Download className="h-3 w-3 inline" /> View
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0 text-zinc-400 hover:text-red-500"
+                        onClick={() => handleFileDelete(f.id, f.filename)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

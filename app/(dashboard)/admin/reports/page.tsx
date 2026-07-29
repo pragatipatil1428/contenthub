@@ -65,6 +65,31 @@ export default function AdminReportsPage() {
         </Card>
       </div>
 
+      {/* Content by Type */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Content by Type</CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[250px]">
+            <thead>
+              <tr className="border-b border-zinc-200">
+                <th className="text-left py-2 font-medium text-zinc-500">Type</th>
+                <th className="text-right py-2 font-medium text-zinc-500">Items</th>
+              </tr>
+            </thead>
+            <tbody>
+              {charts?.contentByType?.map((item: any) => (
+                <tr key={item.contentType} className="border-b border-zinc-100 last:border-0">
+                  <td className="py-2.5 capitalize">{item.contentType.toLowerCase()}</td>
+                  <td className="text-right py-2.5 text-zinc-500">{item._count.id}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
       {/* Monthly Revenue Table */}
       <Card>
         <CardHeader>
@@ -84,30 +109,6 @@ export default function AdminReportsPage() {
                     <td className="py-2.5">{item.month}</td>
                     <td className="text-right py-2.5 font-medium whitespace-nowrap">{formatPrice(item.revenue)}</td>
                     <td className="text-right py-2.5 text-zinc-500">{item.purchases}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-      </Card>
-
-      {/* Category Distribution */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Content by Category</CardTitle>
-        </CardHeader>          <CardContent className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[250px]">
-              <thead>
-                <tr className="border-b border-zinc-200">
-                  <th className="text-left py-2 font-medium text-zinc-500">Category</th>
-                  <th className="text-right py-2 font-medium text-zinc-500">Items</th>
-                </tr>
-              </thead>
-              <tbody>
-                {charts?.categories?.map((cat: any) => (
-                  <tr key={cat.name} className="border-b border-zinc-100 last:border-0">
-                    <td className="py-2.5">{cat.name}</td>
-                    <td className="text-right py-2.5 text-zinc-500">{cat.count}</td>
                   </tr>
                 ))}
               </tbody>
