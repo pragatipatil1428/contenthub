@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MediaViewer } from "@/components/ui/media-viewer";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, formatDateTime } from "@/lib/utils";
 
 // ─── Animation variants ───────────────────────────────────────────────
 const containerVariants = {
@@ -39,7 +39,7 @@ const scaleIn = {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-50">
-      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 space-y-10">
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-5 lg:px-6 space-y-6">
         <div className="text-center space-y-4">
           <Skeleton className="h-24 w-24 rounded-full mx-auto" />
           <Skeleton className="h-10 w-72 mx-auto" />
@@ -101,8 +101,7 @@ function ErrorState() {
 function ContentTypeIcon({ type, className }: { type: string; className?: string }) {
   switch (type) {
     case "AUDIO": return <Music className={className} />;
-    case "VIDEO":
-    case "MOVIE": return <Film className={className} />;
+    case "VIDEO": return <Film className={className} />;
     default: return <Download className={className} />;
   }
 }
@@ -214,7 +213,7 @@ function SuccessPageContent() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 space-y-8"
+        className="relative mx-auto max-w-2xl px-4 py-10 sm:px-5 lg:px-6 space-y-6"
       >
         {/* ═══ SUCCESS HEADER ═══ */}
         <motion.div
@@ -225,14 +224,14 @@ function SuccessPageContent() {
           <div className="relative inline-flex">
             <motion.div
               variants={scaleIn}
-              className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-200/50"
+              className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-200/50"
             >
               <motion.div
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
               >
-                <CheckCircle className="h-12 w-12 text-white" />
+                <CheckCircle className="h-8 w-8 text-white" />
               </motion.div>
             </motion.div>
             {isApproved && <SuccessParticles />}
@@ -241,7 +240,7 @@ function SuccessPageContent() {
           <div className="space-y-2">
             <motion.h1
               variants={itemVariants}
-              className="text-3xl sm:text-4xl font-bold tracking-tight"
+              className="text-2xl sm:text-3xl font-bold tracking-tight"
             >
               {isApproved ? (
                 <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
@@ -253,7 +252,7 @@ function SuccessPageContent() {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-zinc-500 max-w-md mx-auto text-base leading-relaxed"
+              className="text-zinc-500 max-w-md mx-auto text-sm leading-relaxed"
             >
               {isApproved
                 ? "Your content is ready. View and download it below."
@@ -267,22 +266,22 @@ function SuccessPageContent() {
           <Card className="border-0 shadow-xl shadow-zinc-200/50 overflow-hidden">
             {/* Top gradient accent */}
             <div className="h-2 bg-gradient-to-r from-purple-500 via-blue-500 to-teal-500" />
-            <CardContent className="p-6 sm:p-8">
+            <CardContent className="p-4 sm:p-6">
               {/* Buyer & Order info */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-200/50 shrink-0">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-lg font-bold shadow-md shadow-purple-200/50 shrink-0">
                     {content?.title?.charAt(0)?.toUpperCase() || "C"}
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-xl font-bold truncate">{content?.title || "Content"}</h2>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-sm text-zinc-500">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {formatDate(purchase.createdAt)}
+                    <h2 className="text-base font-bold truncate">                  {content?.title || "Content"}</h2>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-zinc-500">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {formatDateTime(purchase.createdAt)}
                       </span>
-                      <span className="flex items-center gap-1.5">
-                        <Hash className="h-3.5 w-3.5" />
+                      <span className="flex items-center gap-1">
+                        <Hash className="h-3 w-3" />
                         {purchase.orderNumber}
                       </span>
                     </div>
@@ -293,7 +292,7 @@ function SuccessPageContent() {
                   {isPaid && (
                     <div className="text-right">
                       <p className="text-xs text-zinc-400">Amount Paid</p>
-                      <p className="text-2xl font-bold text-zinc-900">
+                      <p className="text-xl font-bold text-zinc-900">
                         {formatPrice(purchase.finalAmount)}
                       </p>
                     </div>
@@ -314,7 +313,7 @@ function SuccessPageContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 pt-4">
                 <DetailRow icon={Package} label="Content Type" value={content?.contentType || "—"} />
                 <DetailRow icon={CreditCard} label="Payment Method" value={paymentLabel} />
-                <DetailRow icon={Calendar} label="Purchase Date" value={formatDate(purchase.createdAt)} />
+                <DetailRow icon={Calendar} label="Purchase Date" value={formatDateTime(purchase.createdAt)} />
                 <DetailRow icon={Hash} label="Order Number" value={purchase.orderNumber} />
                 {purchase.user?.name && (
                   <DetailRow icon={ShoppingBag} label="Purchased By" value={purchase.user.name} />
@@ -344,11 +343,12 @@ function SuccessPageContent() {
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="p-6 sm:p-8">
+              <CardContent className="p-4 sm:p-6">
                 <MediaViewer
                   contentType={content.contentType}
                   title={content.title}
                   thumbnail={content.thumbnail}
+                  previewVideo={content.previewVideo}
                   files={content.files || []}
                   description={content.description}
                 />
@@ -418,26 +418,26 @@ function SuccessPageContent() {
         {/* ═══ ACTION BUTTONS ═══ */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 pb-8 pt-2"
+          className="flex flex-col sm:flex-row items-center justify-center gap-2 pb-6"
         >
           {isApproved && (
             <Link href="/dashboard/purchases">
               <Button
-                size="lg"
-                className="gap-2 h-12 px-6 rounded-xl shadow-lg shadow-purple-200/30 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-base"
+                size="default"
+                className="gap-2 h-10 px-5 rounded-xl shadow-md shadow-purple-200/30 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm"
               >
-                <LayoutDashboard className="h-4 w-4" /> Go to My Purchases
+                <LayoutDashboard className="h-3.5 w-3.5" /> My Purchases
               </Button>
             </Link>
           )}
           <Link href="/dashboard">
-            <Button variant="outline" size="lg" className="gap-2 h-12 px-6 rounded-xl border-zinc-300 text-base">
-              <LayoutDashboard className="h-4 w-4" /> Dashboard
+            <Button variant="outline" size="default" className="gap-2 h-10 px-5 rounded-xl border-zinc-300 text-sm">
+              <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
             </Button>
           </Link>
           <Link href="/contents">
-            <Button variant="ghost" size="lg" className="gap-2 h-12 px-6 rounded-xl text-base text-zinc-600">
-              Continue Shopping <ArrowRight className="h-4 w-4" />
+            <Button variant="ghost" size="default" className="gap-2 h-10 px-5 rounded-xl text-sm text-zinc-600">
+              Shop <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </motion.div>

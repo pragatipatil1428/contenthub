@@ -26,11 +26,9 @@ import { slugify, fileSizeFormat } from "@/lib/utils";
 import { toast } from "sonner";
 
 const contentTypeLabels: Record<string, string> = {
-  IMAGE: "Image", VIDEO: "Video", MOVIE: "Movie", AUDIO: "Audio",
-  PDF: "PDF", COURSE: "Course", EBOOK: "Ebook", SOFTWARE: "Software",
-  TEMPLATE: "Template", DOCUMENT: "Document", EXTERNAL_LINK: "External Link",
-  MIXED_FILES: "Mixed Files", WORD: "Word", EXCEL: "Excel", ZIP: "ZIP",
-  POWERPOINT: "PowerPoint", TEXT_ARTICLE: "Article",
+  IMAGE: "Image", VIDEO: "Video", AUDIO: "Audio",
+  PDF: "PDF", EBOOK: "Ebook", SOFTWARE: "Software",
+  TEMPLATE: "Template", DOCUMENT: "Document", COURSE: "Course",
 };
 
 const statusVariants = [
@@ -50,14 +48,14 @@ export default function NewContentPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const [previewImageUrl, setPreviewImageUrl] = useState("");
-  const [previewVideoUrl, setPreviewVideoUrl] = useState("");
-  const [fileUrl, setFileUrl] = useState("");
   const [fileSize, setFileSize] = useState<number | null>(null);
   const [contentFiles, setContentFiles] = useState<any[]>([]);
   const [uploadingFile, setUploadingFile] = useState(false);
-  const [selectedFileType, setSelectedFileType] = useState("main");
+  const [coverImage, setCoverImage] = useState("");
+  const [coverVideo, setCoverVideo] = useState("");
+  const [coverMediaType, setCoverMediaType] = useState<"image" | "video">("image");
+  const [uploadingCoverImage, setUploadingCoverImage] = useState(false);
+  const [uploadingCoverVideo, setUploadingCoverVideo] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(true);
   const [customSlug, setCustomSlug] = useState("");
@@ -75,11 +73,6 @@ export default function NewContentPage() {
       status: "DRAFT",
       priceType: "FREE",
       currency: "INR",
-      isFeatured: false,
-      isTrending: false,
-      isPopular: false,
-      isNewArrival: false,
-      isRecommended: false,
     },
   });
 
@@ -91,21 +84,13 @@ export default function NewContentPage() {
   const contentTypeAcceptMap: Record<string, { accept: string; hint: string }> = {
     AUDIO: { accept: ".mp3,.wav,.flac,.aac,.ogg,.wma,.m4a,.opus", hint: "MP3, WAV, FLAC, AAC, OGG" },
     VIDEO: { accept: ".mp4,.avi,.mov,.mkv,.wmv,.webm,.flv", hint: "MP4, AVI, MOV, MKV, WEBM" },
-    MOVIE: { accept: ".mp4,.mkv,.avi,.webm", hint: "MP4, MKV, AVI, WEBM" },
     IMAGE: { accept: ".jpg,.jpeg,.png,.webp,.gif,.svg,.bmp,.tiff", hint: "JPG, PNG, WEBP, GIF, SVG" },
     PDF: { accept: ".pdf", hint: "PDF" },
-    EBOOK: { accept: ".pdf,.epub,.mobi,.azw3", hint: "PDF, EPUB, MOBI" },
-    DOCUMENT: { accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt", hint: "PDF, DOC, XLS, PPT, TXT" },
-    WORD: { accept: ".doc,.docx", hint: "DOC, DOCX" },
-    EXCEL: { accept: ".xls,.xlsx,.csv", hint: "XLS, XLSX, CSV" },
-    POWERPOINT: { accept: ".ppt,.pptx", hint: "PPT, PPTX" },
-    ZIP: { accept: ".zip,.rar,.7z,.tar,.gz", hint: "ZIP, RAR, 7Z, TAR" },
-    SOFTWARE: { accept: ".exe,.msi,.dmg,.apk,.deb,.rpm", hint: "EXE, MSI, DMG, APK" },
+    EBOOK: { accept: ".pdf,.epub,.mobi", hint: "PDF, EPUB, MOBI" },
+    SOFTWARE: { accept: ".zip,.rar,.7z,.exe,.msi,.dmg,.apk", hint: "ZIP, RAR, EXE, DMG, APK" },
     TEMPLATE: { accept: ".zip,.rar,.tar.gz", hint: "ZIP, RAR (template files)" },
+    DOCUMENT: { accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt", hint: "PDF, DOC, XLS, PPT, TXT" },
     COURSE: { accept: ".mp4,.pdf,.zip,.mp3", hint: "MP4, PDF, ZIP, MP3" },
-    MIXED_FILES: { accept: "", hint: "Any file type" },
-    EXTERNAL_LINK: { accept: "", hint: "External links don't need file uploads" },
-    TEXT_ARTICLE: { accept: ".txt,.md,.html,.pdf", hint: "TXT, MD, HTML, PDF" },
   };
 
   const currentFileConfig = contentTypeAcceptMap[watchContentType] || { accept: "", hint: "Any file type" };
@@ -136,7 +121,6 @@ export default function NewContentPage() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("type", selectedFileType);
 
       const res = await fetch(`/api/contents/${slug}/files`, {
         method: "POST",
@@ -154,6 +138,68 @@ export default function NewContentPage() {
       toast.error("Failed to upload file");
     } finally {
       setUploadingFile(false);
+      e.target.value = "";
+    }
+  };
+
+  // Handle cover image upload
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const slug = customSlug || slugify(watchTitle || "untitled");
+
+    setUploadingCoverImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`/api/contents/${slug}/files`, {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        setCoverImage(json.data.url);
+        toast.success("Cover image uploaded");
+      } else {
+        toast.error(json.message || "Upload failed. Save the content first.");
+      }
+    } catch {
+      toast.error("Failed to upload cover image");
+    } finally {
+      setUploadingCoverImage(false);
+      e.target.value = "";
+    }
+  };
+
+  // Handle cover video upload
+  const handleCoverVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const slug = customSlug || slugify(watchTitle || "untitled");
+
+    setUploadingCoverVideo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`/api/contents/${slug}/files`, {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        setCoverVideo(json.data.url);
+        toast.success("Cover video uploaded");
+      } else {
+        toast.error(json.message || "Upload failed. Save the content first.");
+      }
+    } catch {
+      toast.error("Failed to upload cover video");
+    } finally {
+      setUploadingCoverVideo(false);
       e.target.value = "";
     }
   };
@@ -215,16 +261,12 @@ export default function NewContentPage() {
       const payload = {
         ...data,
         slug: customSlug || slugify(data.title),
-        thumbnail: thumbnailUrl || null,
-        previewImage: previewImageUrl || null,
-        previewVideo: previewVideoUrl || null,
-        fileUrl: fileUrl || null,
+        thumbnail: coverImage || null,
+        previewVideo: coverVideo || null,
         fileSize: fileSize || null,
         tags,
         originalPrice: data.priceType === "PAID" ? data.originalPrice : null,
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
-        duration: data.duration || null,
-        releaseDate: data.releaseDate || null,
       };
 
       const res = await fetch("/api/contents", {
@@ -333,16 +375,6 @@ export default function NewContentPage() {
               )}
             </div>
 
-            {/* Subtitle */}
-            <div className="space-y-2">
-              <Label htmlFor="subtitle">Subtitle</Label>
-              <Input
-                id="subtitle"
-                placeholder="e.g. Learn Full-Stack Development from Scratch"
-                {...register("subtitle")}
-              />
-            </div>
-
             {/* Slug */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -386,54 +418,22 @@ export default function NewContentPage() {
               />
             </div>
 
-            {/* Author & Language */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="author">Author</Label>
-                <Input
-                  id="author"
-                  placeholder="Content creator name"
-                  {...register("author")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <Select
-                  value={watch("language") || ""}
-                  onValueChange={(v) => setValue("language", v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["English", "Hindi", "Spanish", "French", "German", "Japanese", "Chinese", "Arabic", "Portuguese", "Russian", "Other"].map((lang) => (
-                      <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Duration & Version */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="duration">Duration (minutes)</Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 60"
-                  {...register("duration", { valueAsNumber: true })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="version">Version</Label>
-                <Input
-                  id="version"
-                  placeholder="e.g. 1.0.0"
-                  {...register("version")}
-                />
-              </div>
+            {/* Language */}
+            <div className="space-y-2">
+              <Label htmlFor="language">Language</Label>
+              <Select
+                value={watch("language") || ""}
+                onValueChange={(v) => setValue("language", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["English", "Hindi", "Spanish", "French", "German", "Japanese", "Chinese", "Arabic", "Portuguese", "Russian", "Other"].map((lang) => (
+                    <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -610,45 +610,6 @@ export default function NewContentPage() {
           </CardContent>
         </Card>
 
-        {/* Promotional Flags */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Image className="h-5 w-5 text-purple-500" />
-              Promotion & Visibility
-            </CardTitle>
-            <CardDescription>
-              Control how your content is featured
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { key: "isFeatured", label: "Featured", desc: "Show on featured sections" },
-                { key: "isTrending", label: "Trending", desc: "Mark as trending content" },
-                { key: "isPopular", label: "Popular", desc: "Mark as popular content" },
-                { key: "isNewArrival", label: "New Arrival", desc: "Mark as new arrival" },
-                { key: "isRecommended", label: "Recommended", desc: "Show as recommended" },
-              ].map((flag) => (
-                <label
-                  key={flag.key}
-                  className="flex items-start gap-3 rounded-xl border border-zinc-200 p-4 cursor-pointer hover:bg-zinc-50 transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    {...register(flag.key as any)}
-                    className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-purple-600 focus:ring-purple-500"
-                  />
-                  <div>
-                    <p className="text-sm font-medium">{flag.label}</p>
-                    <p className="text-xs text-zinc-500">{flag.desc}</p>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Files & Media */}
         <Card>
           <CardHeader>
@@ -659,48 +620,170 @@ export default function NewContentPage() {
             <CardDescription>
               Upload files and set media URLs for this content
             </CardDescription>
-          </CardHeader>
+          </CardHeader        >
           <CardContent className="space-y-6">
-            {/* Media URL Fields */}
+            {/* Cover Media */}
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-zinc-700">Media URLs</h4>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Thumbnail URL</Label>
-                  <Input
-                    placeholder="https://example.com/thumb.jpg"
-                    value={thumbnailUrl}
-                    onChange={(e) => setThumbnailUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Preview Image URL</Label>
-                  <Input
-                    placeholder="https://example.com/preview.jpg"
-                    value={previewImageUrl}
-                    onChange={(e) => setPreviewImageUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Preview Video URL</Label>
-                  <Input
-                    placeholder="https://example.com/preview.mp4"
-                    value={previewVideoUrl}
-                    onChange={(e) => setPreviewVideoUrl(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Main File URL</Label>
-                  <Input
-                    placeholder="https://example.com/file.pdf"
-                    value={fileUrl}
-                    onChange={(e) => setFileUrl(e.target.value)}
-                  />
-                </div>
+              <div className="flex items-center gap-2">
+                <Image className="h-4 w-4 text-purple-500" />
+                <h4 className="text-sm font-medium text-zinc-700">Cover Media</h4>
               </div>
-            </div>
+              <p className="text-xs text-zinc-400 -mt-2">
+                Shown on browse cards and the content page before purchase
+              </p>
 
-            <div className="border-t border-zinc-200" />
+              {/* Cover Media Type Toggle */}
+              <div className="flex items-center gap-2 p-1 bg-zinc-100 rounded-xl w-fit">
+                <button
+                  type="button"
+                  onClick={() => setCoverMediaType("image")}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                    coverMediaType === "image"
+                      ? "bg-white text-zinc-900 shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700"
+                  }`}
+                >
+                  <Image className="h-3.5 w-3.5 inline mr-1.5" />
+                  Image
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCoverMediaType("video")}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                    coverMediaType === "video"
+                      ? "bg-white text-zinc-900 shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700"
+                  }`}
+                >
+                  <Film className="h-3.5 w-3.5 inline mr-1.5" />
+                  Video
+                </button>
+              </div>
+
+              {/* Cover Image */}
+              {coverMediaType === "image" && (
+                <div className="rounded-xl border border-zinc-200 p-4 space-y-3">
+                  <Label className="text-sm">Cover Image</Label>
+                  {coverImage ? (
+                    <div className="relative rounded-lg overflow-hidden bg-zinc-100 max-h-40">
+                      <img
+                        src={coverImage}
+                        alt="Cover"
+                        className="w-full h-40 object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 h-7 w-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
+                        onClick={() => setCoverImage("")}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg bg-zinc-50 border border-dashed border-zinc-200 h-32 flex flex-col items-center justify-center text-zinc-400">
+                      <Image className="h-8 w-8 mb-1 opacity-40" />
+                      <p className="text-xs">No cover image set</p>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleCoverImageUpload}
+                        disabled={uploadingCoverImage}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingCoverImage}
+                        asChild
+                      >
+                        <span>
+                          {uploadingCoverImage ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                          ) : (
+                            <Upload className="h-3.5 w-3.5 mr-1" />
+                          )}
+                          Upload
+                        </span>
+                      </Button>
+                    </label>
+                    <Input
+                      placeholder="Or paste image URL"
+                      value={coverImage}
+                      onChange={(e) => setCoverImage(e.target.value)}
+                      className="h-8 text-xs flex-1"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Cover Video */}
+              {coverMediaType === "video" && (
+                <div className="rounded-xl border border-zinc-200 p-4 space-y-3">
+                  <Label className="text-sm">Cover Video / Trailer</Label>
+                  {coverVideo ? (
+                    <div className="relative rounded-lg overflow-hidden bg-black max-h-40">
+                      <video
+                        src={coverVideo}
+                        controls
+                        className="w-full h-40 object-contain"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 h-7 w-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
+                        onClick={() => setCoverVideo("")}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg bg-zinc-50 border border-dashed border-zinc-200 h-32 flex flex-col items-center justify-center text-zinc-400">
+                      <Film className="h-8 w-8 mb-1 opacity-40" />
+                      <p className="text-xs">No cover video set</p>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="video/*"
+                        onChange={handleCoverVideoUpload}
+                        disabled={uploadingCoverVideo}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingCoverVideo}
+                        asChild
+                      >
+                        <span>
+                          {uploadingCoverVideo ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                          ) : (
+                            <Upload className="h-3.5 w-3.5 mr-1" />
+                          )}
+                          Upload
+                        </span>
+                      </Button>
+                    </label>
+                    <Input
+                      placeholder="Or paste video URL"
+                      value={coverVideo}
+                      onChange={(e) => setCoverVideo(e.target.value)}
+                      className="h-8 text-xs flex-1"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="border-t border-zinc-100" />
+            </div>
 
             {/* File Upload */}
             <div className="space-y-4">
@@ -709,17 +792,6 @@ export default function NewContentPage() {
                   Uploaded Files ({contentFiles.length})
                 </h4>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Select value={selectedFileType} onValueChange={setSelectedFileType}>
-                    <SelectTrigger className="h-9 w-[130px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="main">Main File</SelectItem>
-                      <SelectItem value="preview">Preview</SelectItem>
-                      <SelectItem value="thumbnail">Thumbnail</SelectItem>
-                      <SelectItem value="sample">Sample</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <label className="cursor-pointer">
                     <input
                       type="file"
@@ -762,7 +834,7 @@ export default function NewContentPage() {
                 <div className="rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center">
                   {watchContentType === "AUDIO" ? (
                     <Music className="mx-auto h-8 w-8 text-zinc-300" />
-                  ) : watchContentType === "VIDEO" || watchContentType === "MOVIE" ? (
+                  ) : watchContentType === "VIDEO" ? (
                     <Film className="mx-auto h-8 w-8 text-zinc-300" />
                   ) : (
                     <Upload className="mx-auto h-8 w-8 text-zinc-300" />
@@ -808,6 +880,8 @@ export default function NewContentPage() {
                 </div>
               )}
             </div>
+
+
           </CardContent>
         </Card>
 

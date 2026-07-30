@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import {
   Download, Eye, Star, Share2, Heart, Bookmark,
   Clock, User, Globe, FileText, ChevronRight, ShoppingCart,
-  Check, Loader2
+  Check, Loader2, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ export default function ContentDetailPage() {
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
+  const [playingPreview, setPlayingPreview] = useState(false);
 
   useEffect(() => {
     if (params.slug) {
@@ -122,9 +123,28 @@ export default function ContentDetailPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Thumbnail */}
+          {/* Thumbnail / Preview Video */}
           <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-100">
-            {content.thumbnail ? (
+            {playingPreview && content.previewVideo ? (
+              <div className="absolute inset-0 bg-black">
+                <video
+                  autoPlay
+                  controls
+                  className="h-full w-full"
+                  poster={content.thumbnail || undefined}
+                  onEnded={() => setPlayingPreview(false)}
+                >
+                  <source src={content.previewVideo} />
+                </video>
+                <button
+                  type="button"
+                  className="absolute top-3 right-3 h-8 w-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-colors z-10"
+                  onClick={() => setPlayingPreview(false)}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : content.thumbnail ? (
               <img
                 src={content.thumbnail}
                 alt={content.title}
@@ -135,14 +155,21 @@ export default function ContentDetailPage() {
                 <FileText className="h-16 w-16 text-zinc-300" />
               </div>
             )}
-            {content.previewVideo && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors cursor-pointer">
+            {content.previewVideo && !playingPreview && (
+              <button
+                type="button"
+                onClick={() => setPlayingPreview(true)}
+                className="absolute inset-0 flex items-center justify-center group cursor-pointer"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 hover:scale-105 transition-all shadow-lg">
                   <svg className="h-6 w-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
-              </div>
+                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  Play trailer
+                </span>
+              </button>
             )}
           </div>
 
@@ -155,25 +182,10 @@ export default function ContentDetailPage() {
               ) : (
                 <Badge variant="paid">Premium</Badge>
               )}
-              {content.isFeatured && <Badge variant="premium">Featured</Badge>}
-              {content.isTrending && <Badge variant="warning">Trending</Badge>}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold">{content.title}</h1>
-            {content.subtitle && (
-              <p className="text-lg text-zinc-500 mt-2">{content.subtitle}</p>
-            )}
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-zinc-500">
-              {content.author && (
-                <span className="flex items-center gap-1">
-                  <User className="h-4 w-4" /> {content.author}
-                </span>
-              )}
-              {content.duration && (
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" /> {content.duration} min
-                </span>
-              )}
               {content.language && (
                 <span className="flex items-center gap-1">
                   <Globe className="h-4 w-4" /> {content.language}
@@ -213,12 +225,8 @@ export default function ContentDetailPage() {
               <div className="grid grid-cols-2 gap-4">
                 {[
                   ["Content Type", content.contentType],
-                  ["Release Date", formatDate(content.releaseDate)],
-                  ["Version", content.version],
                   ["Language", content.language],
-                  ["Author", content.author],
                   ["File Size", fileSizeFormat(content.fileSize)],
-                  ["Duration", content.duration ? `${content.duration} min` : "—"],
 
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between py-2 border-b border-zinc-100">

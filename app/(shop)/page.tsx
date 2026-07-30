@@ -190,9 +190,6 @@ export default function HomePage() {
               { name: "Ebooks", icon: BookOpen, color: "from-rose-500 to-pink-500", slug: "EBOOK" },
               { name: "Software", icon: Code, color: "from-cyan-500 to-blue-500", slug: "SOFTWARE" },
               { name: "Documents", icon: FileText, color: "from-zinc-500 to-zinc-600", slug: "DOCUMENT" },
-              { name: "Spreadsheets", icon: FileSpreadsheet, color: "from-green-500 to-emerald-500", slug: "EXCEL" },
-              { name: "Design", icon: PenTool, color: "from-fuchsia-500 to-purple-500", slug: "POWERPOINT" },
-              { name: "Articles", icon: FileText, color: "from-sky-500 to-indigo-500", slug: "TEXT_ARTICLE" },
             ].map((type, i) => {
               const Icon = type.icon;
               return (

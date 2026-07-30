@@ -28,6 +28,7 @@ export async function GET(
                 title: true,
                 slug: true,
                 thumbnail: true,
+                previewVideo: true,
                 contentType: true,
                 priceType: true,
                 description: true,

@@ -46,13 +46,11 @@ export const changePasswordSchema = z.object({
 
 export const contentSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
-  subtitle: z.string().optional(),
   description: z.string().optional(),
   richText: z.string().optional(),
   contentType: z.enum([
-    "IMAGE", "VIDEO", "MOVIE", "AUDIO", "PDF", "COURSE", "EBOOK",
-    "SOFTWARE", "TEMPLATE", "DOCUMENT", "EXTERNAL_LINK", "MIXED_FILES",
-    "WORD", "EXCEL", "ZIP", "POWERPOINT", "TEXT_ARTICLE"
+    "IMAGE", "VIDEO", "AUDIO", "PDF", "EBOOK",
+    "SOFTWARE", "TEMPLATE", "DOCUMENT", "COURSE"
   ]),
   status: z.enum(["PUBLISHED", "DRAFT", "HIDDEN"]),
   priceType: z.enum(["FREE", "PAID", "COMING_SOON", "HIDDEN"]),
@@ -61,15 +59,6 @@ export const contentSchema = z.object({
   currency: z.string().default("INR"),
   tags: z.array(z.string()).optional(),
   language: z.string().optional(),
-  author: z.string().optional(),
-  duration: z.number().optional().nullable(),
-  releaseDate: z.string().optional().nullable(),
-  version: z.string().optional(),
-  isFeatured: z.boolean().optional(),
-  isTrending: z.boolean().optional(),
-  isPopular: z.boolean().optional(),
-  isNewArrival: z.boolean().optional(),
-  isRecommended: z.boolean().optional(),
 });
 
 export const qrPaymentSchema = z.object({

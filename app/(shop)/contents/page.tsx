@@ -14,11 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { formatPrice, fileSizeFormat } from "@/lib/utils";
 
 const contentTypeLabels: Record<string, string> = {
-  IMAGE: "Images", VIDEO: "Videos", MOVIE: "Movies", AUDIO: "Audio",
-  PDF: "PDFs", COURSE: "Courses", EBOOK: "Ebooks", SOFTWARE: "Software",
-  TEMPLATE: "Templates", DOCUMENT: "Documents", EXTERNAL_LINK: "External Links",
-  MIXED_FILES: "Mixed Files", WORD: "Word", EXCEL: "Excel", ZIP: "ZIP",
-  POWERPOINT: "PowerPoint", TEXT_ARTICLE: "Articles",
+  IMAGE: "Images", VIDEO: "Videos", AUDIO: "Audio",
+  PDF: "PDFs", EBOOK: "Ebooks", SOFTWARE: "Software",
+  TEMPLATE: "Templates", DOCUMENT: "Documents", COURSE: "Courses",
 };
 
 function ContentCard({ content }: { content: any }) {
@@ -40,6 +38,16 @@ function ContentCard({ content }: { content: any }) {
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Download className="h-10 w-10 text-zinc-300" />
+              </div>
+            )}
+            {/* Play icon overlay for preview video */}
+            {content.previewVideo && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-transform duration-200 group-hover:scale-110 group-hover:bg-black/70">
+                  <svg className="h-5 w-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
               </div>
             )}
             {/* Overlay badges */}

@@ -12,21 +12,13 @@ datasource db {
 enum ContentType {
   IMAGE
   VIDEO
-  MOVIE
   AUDIO
   PDF
-  COURSE
   EBOOK
   SOFTWARE
   TEMPLATE
   DOCUMENT
-  EXTERNAL_LINK
-  MIXED_FILES
-  WORD
-  EXCEL
-  ZIP
-  POWERPOINT
-  TEXT_ARTICLE
+  COURSE
 }
 
 enum ContentStatus {

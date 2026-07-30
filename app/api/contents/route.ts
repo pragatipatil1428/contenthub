@@ -13,9 +13,6 @@ export async function GET(request: NextRequest) {
     const priceType = searchParams.get("priceType") || "";
     const sort = searchParams.get("sort") || "newest";
     const status = searchParams.get("status") || "";
-    const featured = searchParams.get("featured") || "";
-    const trending = searchParams.get("trending") || "";
-
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};
@@ -24,8 +21,6 @@ export async function GET(request: NextRequest) {
     if (search) where.title = { contains: search, mode: "insensitive" };
     if (type) where.contentType = type;
     if (priceType) where.priceType = priceType;
-    if (featured === "true") where.isFeatured = true;
-    if (trending === "true") where.isTrending = true;
 
     let orderBy: Record<string, string> = { createdAt: "desc" };
     if (sort === "popular") orderBy = { views: "desc" };

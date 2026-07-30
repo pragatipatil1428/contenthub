@@ -80,7 +80,6 @@ export function getContentTypeIcon(type: string): string {
   const icons: Record<string, string> = {
     IMAGE: "Image",
     VIDEO: "Video",
-    MOVIE: "Film",
     AUDIO: "Music",
     PDF: "FileText",
     COURSE: "BookOpen",
@@ -88,13 +87,6 @@ export function getContentTypeIcon(type: string): string {
     SOFTWARE: "Download",
     TEMPLATE: "Layout",
     DOCUMENT: "File",
-    EXTERNAL_LINK: "Link",
-    MIXED_FILES: "Folder",
-    WORD: "FileText",
-    EXCEL: "FileSpreadsheet",
-    ZIP: "Archive",
-    POWERPOINT: "Presentation",
-    TEXT_ARTICLE: "AlignLeft",
   };
   return icons[type] || "File";
 }

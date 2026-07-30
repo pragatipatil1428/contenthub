@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Eye, Download, FileText, ShoppingBag, Music, Film, Image, ExternalLink } from "lucide-react";
+import { Eye, Download, FileText, ShoppingBag, Music, Film, Image, ExternalLink, FileArchive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,11 +15,13 @@ import { formatDate, formatPrice } from "@/lib/utils";
 const contentTypeIcons: Record<string, any> = {
   IMAGE: Image,
   VIDEO: Film,
-  MOVIE: Film,
   AUDIO: Music,
   PDF: FileText,
   EBOOK: FileText,
   DOCUMENT: FileText,
+  SOFTWARE: FileArchive,
+  TEMPLATE: FileArchive,
+  COURSE: FileText,
 };
 
 export default function PurchasesPage() {
