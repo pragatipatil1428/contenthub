@@ -210,8 +210,8 @@ function ContentsPageContent() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-        <div className="relative w-full sm:flex-1 sm:max-w-md">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <Input
             placeholder="Search content..."

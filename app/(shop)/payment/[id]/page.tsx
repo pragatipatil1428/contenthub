@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  CreditCard, QrCode, Copy, Clock, Upload, Check,
-  Loader2, ArrowLeft, ExternalLink
+  QrCode, Copy, Clock, Upload, Check,
+  Loader2, ArrowLeft, CheckCircle,
+  LayoutDashboard, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +26,7 @@ export default function PaymentPage() {
   const [transactionId, setTransactionId] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(1800); // 30 minutes
   const [copied, setCopied] = useState(false);
 
@@ -80,8 +83,8 @@ export default function PaymentPage() {
       });
       const json = await res.json();
       if (json.success) {
+        setSubmitted(true);
         toast.success("Payment submitted! Pending admin approval.");
-        router.push(`/success?purchaseId=${params.id}`);
       } else {
         toast.error(json.message);
       }
@@ -108,6 +111,73 @@ export default function PaymentPage() {
           Go Home
         </Button>
       </div>
+    );
+  }
+
+  // Submitted state — show confirmation on this page
+  if (submitted) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mx-auto max-w-lg px-4 py-12"
+      >
+        <Card className="border-0 shadow-xl overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-emerald-400 to-teal-500" />
+          <CardContent className="p-8 sm:p-10 text-center space-y-6">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/50">
+              <CheckCircle className="h-10 w-10 text-emerald-500" />
+            </div>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold">Payment Submitted!</h1>
+              <p className="text-zinc-500 text-sm">
+                Your payment for <strong>{purchase.items?.[0]?.content?.title}</strong> has been received.
+                An admin will review and approve it shortly.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-left space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-zinc-500">Order Number</span>
+                <span className="font-medium">{purchase.orderNumber}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-zinc-500">Amount</span>
+                <span className="font-bold">{formatPrice(purchase.finalAmount)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-zinc-500">Status</span>
+                <Badge variant="warning" className="text-xs">Pending Approval</Badge>
+              </div>
+              {transactionId && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-500">Transaction ID</span>
+                  <span className="font-mono text-xs">{transactionId}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-xs text-amber-600">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              Typically reviewed within 24 hours
+            </div>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <Link href="/dashboard/purchases">
+                <Button className="w-full gap-2">
+                  <LayoutDashboard className="h-4 w-4" /> View My Purchases
+                </Button>
+              </Link>
+              <Link href="/contents">
+                <Button variant="outline" className="w-full gap-2">
+                  Continue Shopping <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     );
   }
 
