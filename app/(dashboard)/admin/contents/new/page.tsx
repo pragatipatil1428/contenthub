@@ -59,6 +59,7 @@ export default function NewContentPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(true);
   const [customSlug, setCustomSlug] = useState("");
+  const [savedContentSlug, setSavedContentSlug] = useState<string | null>(null);
 
   const {
     register,
@@ -111,14 +112,44 @@ export default function NewContentPage() {
     }
   }, [watchTitle, autoSlug]);
 
+  // Auto-save content as draft if not yet saved (so file uploads work on new page)
+  const ensureContentExists = async (): Promise<string> => {
+    if (savedContentSlug) return savedContentSlug;
+
+    const slug = customSlug || slugify(watchTitle || "untitled");
+    if (!watchTitle?.trim()) {
+      throw new Error("Please enter a title first");
+    }
+
+    const res = await fetch("/api/contents", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: watchTitle,
+        slug,
+        contentType: watchContentType,
+        status: "DRAFT",
+        priceType: "FREE",
+        currency: "INR",
+      }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      setSavedContentSlug(json.data.slug);
+      setCustomSlug(json.data.slug);
+      return json.data.slug;
+    }
+    throw new Error(json.message || "Failed to save content");
+  };
+
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const slug = customSlug || slugify(watchTitle || "untitled");
 
     setUploadingFile(true);
     try {
+      const slug = await ensureContentExists();
       const formData = new FormData();
       formData.append("file", file);
 
@@ -134,8 +165,8 @@ export default function NewContentPage() {
       } else {
         toast.error(json.message || "Upload failed");
       }
-    } catch {
-      toast.error("Failed to upload file");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload file");
     } finally {
       setUploadingFile(false);
       e.target.value = "";
@@ -146,10 +177,10 @@ export default function NewContentPage() {
   const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const slug = customSlug || slugify(watchTitle || "untitled");
 
     setUploadingCoverImage(true);
     try {
+      const slug = await ensureContentExists();
       const formData = new FormData();
       formData.append("file", file);
 
@@ -163,10 +194,10 @@ export default function NewContentPage() {
         setCoverImage(json.data.url);
         toast.success("Cover image uploaded");
       } else {
-        toast.error(json.message || "Upload failed. Save the content first.");
+        toast.error(json.message || "Upload failed");
       }
-    } catch {
-      toast.error("Failed to upload cover image");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload cover image");
     } finally {
       setUploadingCoverImage(false);
       e.target.value = "";
@@ -177,10 +208,10 @@ export default function NewContentPage() {
   const handleCoverVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const slug = customSlug || slugify(watchTitle || "untitled");
 
     setUploadingCoverVideo(true);
     try {
+      const slug = await ensureContentExists();
       const formData = new FormData();
       formData.append("file", file);
 
@@ -194,10 +225,10 @@ export default function NewContentPage() {
         setCoverVideo(json.data.url);
         toast.success("Cover video uploaded");
       } else {
-        toast.error(json.message || "Upload failed. Save the content first.");
+        toast.error(json.message || "Upload failed");
       }
-    } catch {
-      toast.error("Failed to upload cover video");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload cover video");
     } finally {
       setUploadingCoverVideo(false);
       e.target.value = "";
@@ -207,7 +238,7 @@ export default function NewContentPage() {
   // Handle file delete
   const handleFileDelete = async (fileId: string, filename: string) => {
     if (!confirm(`Delete "${filename}"?`)) return;
-    const slug = customSlug || slugify(watchTitle || "untitled");
+    const slug = savedContentSlug || customSlug || slugify(watchTitle || "untitled");
     try {
       const res = await fetch(`/api/contents/${slug}/files?id=${fileId}`, {
         method: "DELETE",
@@ -226,7 +257,7 @@ export default function NewContentPage() {
 
   // Fetch content files
   const fetchContentFiles = async () => {
-    const slug = customSlug || slugify(watchTitle || "untitled");
+    const slug = savedContentSlug || customSlug || slugify(watchTitle || "untitled");
     try {
       const res = await fetch(`/api/contents/${slug}/files`);
       const json = await res.json();
@@ -269,8 +300,14 @@ export default function NewContentPage() {
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
       };
 
-      const res = await fetch("/api/contents", {
-        method: "POST",
+      // If content was auto-saved, use PUT to update; otherwise POST to create
+      const url = savedContentSlug
+        ? `/api/contents/${savedContentSlug}`
+        : "/api/contents";
+      const method = savedContentSlug ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -278,10 +315,10 @@ export default function NewContentPage() {
       const json = await res.json();
 
       if (json.success) {
-        toast.success("Content created successfully!");
+        toast.success(savedContentSlug ? "Content updated successfully!" : "Content created successfully!");
         router.push("/admin/contents");
       } else {
-        toast.error(json.message || "Failed to create content");
+        toast.error(json.message || "Failed to save content");
       }
     } catch {
       toast.error("An error occurred. Please try again.");
@@ -399,11 +436,11 @@ export default function NewContentPage() {
                 onChange={(e) => {
                   setAutoSlug(false);
                   setCustomSlug(slugify(e.target.value));
-                }}
-                className="font-mono text-sm"
-              />
+                }}      className="font-mono text-sm"
+            />
               <p className="text-xs text-zinc-400">
                 URL: /content/{customSlug || "your-slug"}
+                {savedContentSlug && <span className="ml-2 text-emerald-500">(saved)</span>}
               </p>
             </div>
 
