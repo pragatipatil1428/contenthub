@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function AdminContentsPage() {
@@ -164,7 +164,7 @@ export default function AdminContentsPage() {
                       <TableCell className="hidden sm:table-cell">{content.views}</TableCell>
                       <TableCell className="hidden md:table-cell">{content.purchaseCount ?? 0}</TableCell>
                       <TableCell className="text-zinc-500 hidden sm:table-cell whitespace-nowrap">
-                        {formatDate(content.createdAt)}
+                        {formatDateTime(content.createdAt)}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
