@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type") || "";
     const priceType = searchParams.get("priceType") || "";
     const sort = searchParams.get("sort") || "newest";
-    const status = searchParams.get("status") || "";
+    const status = searchParams.has("status") ? searchParams.get("status") : "PUBLISHED";
     const skip = (page - 1) * limit;
 
     const where: Record<string, unknown> = {};

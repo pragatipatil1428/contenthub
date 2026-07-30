@@ -26,7 +26,7 @@ export default function AdminContentsPage() {
   const fetchContents = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/contents?limit=50");
+      const res = await fetch("/api/contents?limit=50&status=");
       const json = await res.json();
       if (json.success) setContents(json.data);
     } catch {
