@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest) {
         email: true,
         phone: true,
         image: true,
-        role: true,
+        isOwnerAdmin: true,
         emailVerified: true,
         isPremium: true,
       },
