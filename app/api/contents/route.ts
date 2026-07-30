@@ -22,11 +22,11 @@ export async function GET(request: NextRequest) {
     if (type) where.contentType = type;
     if (priceType) where.priceType = priceType;
 
-    let orderBy: Record<string, string> = { createdAt: "desc" };
+    let orderBy: Record<string, any> = { createdAt: "desc" };
     if (sort === "popular") orderBy = { views: "desc" };
     if (sort === "trending") orderBy = { purchaseCount: "desc" };
-    if (sort === "price_asc") orderBy = { discountPrice: "asc" };
-    if (sort === "price_desc") orderBy = { discountPrice: "desc" };
+    if (sort === "price_asc") orderBy = { discountPrice: { sort: "asc", nulls: "last" } };
+    if (sort === "price_desc") orderBy = { discountPrice: { sort: "desc", nulls: "last" } };
     if (sort === "title") orderBy = { title: "asc" };
 
     const [contents, total] = await Promise.all([
