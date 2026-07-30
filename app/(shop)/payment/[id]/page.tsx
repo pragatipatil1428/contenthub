@@ -161,14 +161,14 @@ export default function PaymentPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* QR Code (placeholder) */}
-            <div className="flex justify-center">
+            {/* <div className="flex justify-center">
               <div className="h-48 w-48 rounded-2xl bg-zinc-100 flex items-center justify-center border-2 border-dashed border-zinc-300">
                 <div className="text-center">
                   <QrCode className="mx-auto h-12 w-12 text-zinc-400" />
                   <p className="text-xs text-zinc-400 mt-2">QR Code Here</p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Amount */}
             <div className="text-center">

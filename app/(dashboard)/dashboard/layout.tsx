@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, ShoppingBag, Download, Heart, Bookmark,
-  FileText, User, Settings, LogOut, Menu, ChevronLeft,
+  LayoutDashboard, ShoppingBag, User,
+  LogOut, Menu, ChevronLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,7 @@ import { toast } from "sonner";
 const sidebarItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/purchases", label: "My Purchases", icon: ShoppingBag },
-  { href: "/dashboard/downloads", label: "Downloads", icon: Download },
-  { href: "/dashboard/wishlist", label: "Wishlist", icon: Heart },
-  { href: "/dashboard/bookmarks", label: "Bookmarks", icon: Bookmark },
-  { href: "/dashboard/invoices", label: "Invoices", icon: FileText },
   { href: "/dashboard/profile", label: "Profile", icon: User },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function BuyerDashboardLayout({

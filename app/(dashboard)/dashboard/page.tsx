@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShoppingBag, Download, Heart, Bookmark, ArrowRight, Clock, CheckCircle, XCircle } from "lucide-react";
+import { ShoppingBag, ArrowRight, Clock, CheckCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,9 +28,6 @@ export default function BuyerDashboard() {
 
   const stats = [
     { label: "Purchases", value: purchases.length, icon: ShoppingBag, href: "/dashboard/purchases", color: "from-blue-500 to-cyan-500" },
-    { label: "Downloads", value: "—", icon: Download, href: "/dashboard/downloads", color: "from-emerald-500 to-teal-500" },
-    { label: "Wishlist", value: "—", icon: Heart, href: "/dashboard/wishlist", color: "from-rose-500 to-pink-500" },
-    { label: "Bookmarks", value: "—", icon: Bookmark, href: "/dashboard/bookmarks", color: "from-violet-500 to-purple-500" },
   ];
 
   return (
@@ -69,7 +66,7 @@ export default function BuyerDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="flex flex-wrap gap-4"
       >
         {stats.map((stat) => {
           const Icon = stat.icon;
