@@ -124,6 +124,12 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Increment purchase count
+      await prisma.content.update({
+        where: { id: content.id },
+        data: { purchaseCount: { increment: 1 } },
+      });
+
       // Create download record
       await prisma.download.create({
         data: {
@@ -163,6 +169,12 @@ export async function POST(request: NextRequest) {
           },
         },
       },
+    });
+
+    // Increment purchase count
+    await prisma.content.update({
+      where: { id: content.id },
+      data: { purchaseCount: { increment: 1 } },
     });
 
     return NextResponse.json({ success: true, data: purchase });

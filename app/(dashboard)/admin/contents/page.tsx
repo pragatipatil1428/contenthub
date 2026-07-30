@@ -105,6 +105,7 @@ export default function AdminContentsPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="hidden sm:table-cell">Views</TableHead>
+                  <TableHead className="hidden md:table-cell">Purchases</TableHead>
                   <TableHead className="hidden sm:table-cell">Created</TableHead>
                   <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
@@ -120,7 +121,7 @@ export default function AdminContentsPage() {
                   ))
                 ) : filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
+                    <TableCell colSpan={9} className="text-center py-12 text-zinc-500">
                       No content found. Start by adding your first content.
                     </TableCell>
                   </TableRow>
@@ -161,6 +162,7 @@ export default function AdminContentsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{content.views}</TableCell>
+                      <TableCell className="hidden md:table-cell">{content.purchaseCount ?? 0}</TableCell>
                       <TableCell className="text-zinc-500 hidden sm:table-cell whitespace-nowrap">
                         {formatDate(content.createdAt)}
                       </TableCell>
