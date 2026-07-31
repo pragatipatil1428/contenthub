@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Loader2, Plus, X, Save, Image,
+  ArrowLeft, Loader2, X, Save, Image,
   FileText, Tag, DollarSign, Check, Trash2, Eye,
   Upload, Download, File, Music, Film, FileArchive
 } from "lucide-react";
@@ -53,8 +53,6 @@ export default function EditContentPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(false);
   const [customSlug, setCustomSlug] = useState(slug);
   const [originalSlug, setOriginalSlug] = useState(slug);
@@ -270,11 +268,6 @@ export default function EditContentPage() {
             language: c.language || "",
           });
 
-          // Set tags
-          if (c.tags?.length > 0) {
-            setTags(c.tags.map((t: any) => t.name));
-          }
-
           // Set file fields
           setFileSize(c.fileSize ?? null);
           setCoverImage(c.thumbnail || "");
@@ -295,25 +288,6 @@ export default function EditContentPage() {
         fetchContentFiles();
       });
   }, [slug, reset, router]);
-
-  const addTag = () => {
-    const trimmed = tagInput.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTag();
-    }
-  };
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this content? This action cannot be undone.")) return;
@@ -343,7 +317,6 @@ export default function EditContentPage() {
         thumbnail: coverImage || null,
         previewVideo: coverVideo || null,
         fileSize: fileSize || null,
-        tags,
         originalPrice: data.priceType === "PAID" ? data.originalPrice : null,
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
       };
@@ -572,7 +545,7 @@ export default function EditContentPage() {
               Classification
             </CardTitle>
             <CardDescription>
-              Update categorization and tags
+              Update categorization
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -617,44 +590,6 @@ export default function EditContentPage() {
               </Select>
             </div>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label>Tags</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a tag..."
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={addTag}
-                  disabled={!tagInput.trim()}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="gap-1 pl-3">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 rounded-full hover:bg-zinc-200 p-0.5"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
           </CardContent>
         </Card>
 

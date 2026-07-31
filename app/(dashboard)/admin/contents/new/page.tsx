@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Loader2, Plus, X, Save, Image,
+  ArrowLeft, Loader2, X, Save, Image,
   FileText, Tag, DollarSign, Check, Upload, Download,
   File, Music, Film, FileArchive, Trash2
 } from "lucide-react";
@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "@/components/ui/card";
@@ -47,7 +46,6 @@ const priceTypeOptions = [
 export default function NewContentPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tagInput, setTagInput] = useState("");
   const [fileSize, setFileSize] = useState<number | null>(null);
   const [contentFiles, setContentFiles] = useState<any[]>([]);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -56,7 +54,6 @@ export default function NewContentPage() {
   const [coverMediaType, setCoverMediaType] = useState<"image" | "video">("image");
   const [uploadingCoverImage, setUploadingCoverImage] = useState(false);
   const [uploadingCoverVideo, setUploadingCoverVideo] = useState(false);
-  const [tags, setTags] = useState<string[]>([]);
   const [autoSlug, setAutoSlug] = useState(true);
   const [customSlug, setCustomSlug] = useState("");
   const [savedContentSlug, setSavedContentSlug] = useState<string | null>(null);
@@ -267,25 +264,6 @@ export default function NewContentPage() {
     }
   };
 
-  const addTag = () => {
-    const trimmed = tagInput.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTag();
-    }
-  };
-
   const onSubmit = async (data: ContentInput) => {
     setIsSubmitting(true);
     try {
@@ -295,7 +273,6 @@ export default function NewContentPage() {
         thumbnail: coverImage || null,
         previewVideo: coverVideo || null,
         fileSize: fileSize || null,
-        tags,
         originalPrice: data.priceType === "PAID" ? data.originalPrice : null,
         discountPrice: data.priceType === "PAID" ? data.discountPrice : null,
       };
@@ -483,7 +460,7 @@ export default function NewContentPage() {
               Classification
             </CardTitle>
             <CardDescription>
-              Categorize and tag your content
+              Categorize your content
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -528,44 +505,6 @@ export default function NewContentPage() {
               </Select>
             </div>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label>Tags</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a tag..."
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={addTag}
-                  disabled={!tagInput.trim()}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="gap-1 pl-3">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 rounded-full hover:bg-zinc-200 p-0.5"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
           </CardContent>
         </Card>
 

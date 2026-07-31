@@ -144,15 +144,6 @@ model SubCategory {
   @@map("sub_categories")
 }
 
-model Tag {
-  id      String   @id @default(cuid())
-  name    String   @unique
-  slug    String   @unique
-  content Content[] @relation("ContentTags")
-
-  @@map("tags")
-}
-
 model Content {
   id            String        @id @default(cuid())
   title         String
@@ -196,7 +187,6 @@ model Content {
 
   category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   subCategory SubCategory? @relation(fields: [subCategoryId], references: [id], onDelete: SetNull)
-  tags        Tag[]        @relation("ContentTags")
   files       ContentFile[]
   screenshots ContentScreenshot[]
   features    ContentFeature[]

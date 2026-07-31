@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, Filter, Grid3X3, List, ArrowUpDown, Download, Eye, Star } from "lucide-react";
+import { Search, Filter, Grid3X3, List, ArrowUpDown, Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -84,10 +84,6 @@ function ContentCard({ content }: { content: any }) {
                 <span className="flex items-center gap-1">
                   <Download className="h-3 w-3" /> {content.downloads || 0}
                 </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                {content.rating || "—"}
               </div>
             </div>
           </CardContent>

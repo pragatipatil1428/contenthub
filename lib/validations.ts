@@ -57,7 +57,6 @@ export const contentSchema = z.object({
   originalPrice: z.number().optional().nullable(),
   discountPrice: z.number().optional().nullable(),
   currency: z.string().default("INR"),
-  tags: z.array(z.string()).optional(),
   language: z.string().optional(),
 });
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Download, Eye, Star, Globe, ChevronRight,
+  Download, Eye, Globe, ChevronRight,
   ShoppingCart, Check, Loader2, FileText, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -201,10 +201,6 @@ export default function ContentDetailPage() {
                 )}
                 <span className="flex items-center gap-1">
                   <Eye className="h-3.5 w-3.5" /> {content.views} views
-                </span>
-                <span className="flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                  {content.rating ? `${content.rating}/5` : "No ratings"}
                 </span>
               </div>
             </div>

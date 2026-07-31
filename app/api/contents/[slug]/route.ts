@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/utils";
 import { getSession, requireAdmin, handleAuthError } from "@/lib/auth";
 
 export async function GET(
@@ -13,7 +12,6 @@ export async function GET(
     const content = await prisma.content.findUnique({
       where: { slug },
       include: {
-        tags: true,
         files: true,
         screenshots: true,
         features: true,
@@ -66,7 +64,7 @@ export async function PUT(
 
     const { slug } = await params;
     const body = await request.json();
-    const { tags, ...contentData } = body;
+    const contentData = body;
 
     const existing = await prisma.content.findUnique({ where: { slug } });
     if (!existing) {
@@ -80,18 +78,6 @@ export async function PUT(
       where: { slug },
       data: {
         ...contentData,
-        tags: tags
-          ? {
-              set: [],
-              connectOrCreate: tags.map((tag: string) => ({
-                where: { name: tag },
-                create: { name: tag, slug: slugify(tag) },
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        tags: true,
       },
     });
 

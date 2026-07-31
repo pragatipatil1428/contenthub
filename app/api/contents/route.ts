@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         include: {
-          tags: true,
           _count: { select: { reviews: true } },
         },
       }),
@@ -78,21 +77,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { tags, ...contentData } = body;
+    const contentData = body;
 
     const content = await prisma.content.create({
       data: {
         ...contentData,
         slug,
-        tags: {
-          connectOrCreate: tags?.map((tag: string) => ({
-            where: { name: tag },
-            create: { name: tag, slug: slugify(tag) },
-          })) || [],
-        },
-      },
-      include: {
-        tags: true,
       },
     });
 
