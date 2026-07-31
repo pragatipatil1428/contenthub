@@ -17,6 +17,8 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
 
   useEffect(() => {
     fetchUsers();
@@ -54,10 +56,17 @@ export default function AdminUsersPage() {
     }
   };
 
+  const blockedCount = users.filter((u) => u.isBlocked).length;
+  const adminCount = users.filter((u) => u.isOwnerAdmin).length;
+
   const filtered = users.filter(
     (u) =>
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase())
+      (u.name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase())) &&
+      (statusFilter === "all" ||
+        (statusFilter === "blocked" ? u.isBlocked : !u.isBlocked)) &&
+      (roleFilter === "all" ||
+        (roleFilter === "admin" ? u.isOwnerAdmin : !u.isOwnerAdmin))
   );
 
   return (
@@ -70,15 +79,77 @@ export default function AdminUsersPage() {
       </div>
 
       <Card>
-        <CardContent className="p-4">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <Input
-              placeholder="Search users..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+        <CardContent className="p-4 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <Input
+                placeholder="Search users..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-2 text-sm text-zinc-500">
+              {filtered.length} users
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wide mr-1">Status:</span>
+              <Button
+                variant={statusFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("all")}
+                className="text-xs"
+              >
+                All ({users.length})
+              </Button>
+              <Button
+                variant={statusFilter === "active" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("active")}
+                className="text-xs"
+              >
+                Active ({users.length - blockedCount})
+              </Button>
+              <Button
+                variant={statusFilter === "blocked" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("blocked")}
+                className="text-xs"
+              >
+                Blocked ({blockedCount})
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wide mr-1">Role:</span>
+              <Button
+                variant={roleFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRoleFilter("all")}
+                className="text-xs"
+              >
+                All ({users.length})
+              </Button>
+              <Button
+                variant={roleFilter === "admin" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRoleFilter("admin")}
+                className="text-xs"
+              >
+                Admin ({adminCount})
+              </Button>
+              <Button
+                variant={roleFilter === "buyer" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setRoleFilter("buyer")}
+                className="text-xs"
+              >
+                Buyer ({users.length - adminCount})
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -111,7 +182,9 @@ export default function AdminUsersPage() {
                 ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-12 text-zinc-500">
-                      No users found
+                      {users.length === 0
+                        ? "No users found"
+                        : "No users match this filter"}
                     </TableCell>
                   </TableRow>
                 ) : (

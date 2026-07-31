@@ -18,6 +18,8 @@ export default function AdminContentsPage() {
   const [contents, setContents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
     fetchContents();
@@ -52,10 +54,21 @@ export default function AdminContentsPage() {
     }
   };
 
+  const typeCounts = contents.reduce<Record<string, number>>((acc, c) => {
+    acc[c.contentType] = (acc[c.contentType] || 0) + 1;
+    return acc;
+  }, {});
+  const statusCounts = contents.reduce<Record<string, number>>((acc, c) => {
+    acc[c.status] = (acc[c.status] || 0) + 1;
+    return acc;
+  }, {});
+
   const filtered = contents.filter(
     (c) =>
-      c.title?.toLowerCase().includes(search.toLowerCase()) ||
-      c.contentType?.toLowerCase().includes(search.toLowerCase())
+      (c.title?.toLowerCase().includes(search.toLowerCase()) ||
+        c.contentType?.toLowerCase().includes(search.toLowerCase())) &&
+      (statusFilter === "all" || c.status === statusFilter) &&
+      (typeFilter === "all" || c.contentType === typeFilter)
   );
 
   return (
@@ -75,7 +88,7 @@ export default function AdminContentsPage() {
       </div>
 
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-4">
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
@@ -88,6 +101,39 @@ export default function AdminContentsPage() {
             </div>
             <div className="flex items-center gap-2 text-sm text-zinc-500">
               {filtered.length} items
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wide mr-1">Status:</span>
+              {["all", "PUBLISHED", "DRAFT", "HIDDEN"].map((s) => (
+                <Button
+                  key={s}
+                  variant={statusFilter === s ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setStatusFilter(s)}
+                  className="text-xs"
+                >
+                  {s === "all" ? "All" : s.charAt(0) + s.slice(1).toLowerCase()}{" "}
+                  ({s === "all" ? contents.length : statusCounts[s] || 0})
+                </Button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wide mr-1">Type:</span>
+              {["all", ...Object.keys(typeCounts).sort()].map((t) => (
+                <Button
+                  key={t}
+                  variant={typeFilter === t ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setTypeFilter(t)}
+                  className="text-xs"
+                >
+                  {t === "all" ? "All" : t.charAt(0) + t.slice(1).toLowerCase()}{" "}
+                  ({t === "all" ? contents.length : typeCounts[t]})
+                </Button>
+              ))}
             </div>
           </div>
         </CardContent>
@@ -122,7 +168,9 @@ export default function AdminContentsPage() {
                 ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-12 text-zinc-500">
-                      No content found. Start by adding your first content.
+                      {contents.length === 0
+                        ? "No content found. Start by adding your first content."
+                        : "No content matches this filter"}
                     </TableCell>
                   </TableRow>
                 ) : (

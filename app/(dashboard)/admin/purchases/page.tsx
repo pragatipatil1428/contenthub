@@ -78,12 +78,18 @@ export default function AdminPurchasesPage() {
       p.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
       p.items?.[0]?.content?.title?.toLowerCase().includes(search.toLowerCase());
     if (filter === "pending") return matchesSearch && p.paymentStatus === "PENDING";
+    if (filter === "approved") return matchesSearch && p.paymentStatus === "APPROVED";
+    if (filter === "rejected") return matchesSearch && p.paymentStatus === "REJECTED";
+    if (filter === "refunded") return matchesSearch && p.paymentStatus === "REFUNDED";
     if (filter === "failed") return matchesSearch && p.paymentStatus === "FAILED";
     return matchesSearch;
   });
 
   const qrPendingCount = purchases.filter((p) => p.qrPayment?.status === "PENDING").length;
   const pendingCount = purchases.filter((p) => p.paymentStatus === "PENDING").length;
+  const approvedCount = purchases.filter((p) => p.paymentStatus === "APPROVED").length;
+  const rejectedCount = purchases.filter((p) => p.paymentStatus === "REJECTED").length;
+  const refundedCount = purchases.filter((p) => p.paymentStatus === "REFUNDED").length;
   const failedCount = purchases.filter((p) => p.paymentStatus === "FAILED").length;
 
   return (
@@ -136,6 +142,33 @@ export default function AdminPurchasesPage() {
               >
                 <Clock className="h-3 w-3" />
                 Pending ({pendingCount})
+              </Button>
+              <Button
+                variant={filter === "approved" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("approved")}
+                className="text-xs gap-1.5"
+              >
+                <Check className="h-3 w-3" />
+                Approved ({approvedCount})
+              </Button>
+              <Button
+                variant={filter === "rejected" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("rejected")}
+                className="text-xs gap-1.5"
+              >
+                <X className="h-3 w-3" />
+                Rejected ({rejectedCount})
+              </Button>
+              <Button
+                variant={filter === "refunded" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterParam("refunded")}
+                className="text-xs gap-1.5"
+              >
+                <XCircle className="h-3 w-3" />
+                Refunded ({refundedCount})
               </Button>
               <Button
                 variant={filter === "failed" ? "default" : "outline"}

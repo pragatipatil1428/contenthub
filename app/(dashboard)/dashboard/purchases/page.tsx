@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Eye, Download, FileText, ShoppingBag, Music, Film, Image, ExternalLink, FileArchive } from "lucide-react";
+import { Eye, Download, FileText, ShoppingBag, Music, Film, Image, ExternalLink, FileArchive, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +27,7 @@ const contentTypeIcons: Record<string, any> = {
 export default function PurchasesPage() {
   const [purchases, setPurchases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/purchases")
@@ -37,6 +38,19 @@ export default function PurchasesPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const activeCount = purchases.filter((p) => p.paymentStatus === "APPROVED").length;
+  const pendingCount = purchases.filter((p) => p.paymentStatus === "PENDING").length;
+  const failedCount = purchases.filter((p) =>
+    ["FAILED", "REJECTED", "REFUNDED"].includes(p.paymentStatus)
+  ).length;
+
+  const filtered = purchases.filter((p) => {
+    if (statusFilter === "active") return p.paymentStatus === "APPROVED";
+    if (statusFilter === "pending") return p.paymentStatus === "PENDING";
+    if (statusFilter === "failed") return ["FAILED", "REJECTED", "REFUNDED"].includes(p.paymentStatus);
+    return true;
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -45,6 +59,49 @@ export default function PurchasesPage() {
           View all your purchased content
         </p>
       </div>
+
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wide mr-1">Status:</span>
+            <Button
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="text-xs"
+            >
+              All ({purchases.length})
+            </Button>
+            <Button
+              variant={statusFilter === "active" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("active")}
+              className="text-xs gap-1.5"
+            >
+              <CheckCircle2 className="h-3 w-3" />
+              Active ({activeCount})
+            </Button>
+            <Button
+              variant={statusFilter === "pending" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("pending")}
+              className="text-xs gap-1.5"
+            >
+              <Clock className="h-3 w-3" />
+              Pending ({pendingCount})
+            </Button>
+            <Button
+              variant={statusFilter === "failed" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("failed")}
+              className="text-xs gap-1.5"
+            >
+              <XCircle className="h-3 w-3" />
+              Failed ({failedCount})
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="p-0 overflow-x-auto">
@@ -69,20 +126,26 @@ export default function PurchasesPage() {
                       ))}
                     </TableRow>
                   ))
-                ) : purchases.length === 0 ? (
+                ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-12">
                       <ShoppingBag className="mx-auto h-12 w-12 text-zinc-300 mb-3" />
-                      <p className="text-zinc-500">No purchases yet</p>
-                      <Link href="/contents">
-                        <Button variant="outline" size="sm" className="mt-4">
-                          Browse Content
-                        </Button>
-                      </Link>
+                      {purchases.length === 0 ? (
+                        <>
+                          <p className="text-zinc-500">No purchases yet</p>
+                          <Link href="/contents">
+                            <Button variant="outline" size="sm" className="mt-4">
+                              Browse Content
+                            </Button>
+                          </Link>
+                        </>
+                      ) : (
+                        <p className="text-zinc-500">No purchases match this filter</p>
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  purchases.map((purchase: any) => {
+                  filtered.map((purchase: any) => {
                     const content = purchase.items?.[0]?.content;
                     const TypeIcon = contentTypeIcons[content?.contentType] || FileText;
                     const isApproved = purchase.paymentStatus === "APPROVED";
