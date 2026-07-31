@@ -226,7 +226,6 @@ export default function ContentDetailPage() {
                   {[
                     ["Content Type", content.contentType],
                     ["Language", content.language || "—"],
-                    ["File Size", content.fileSize ? fileSizeFormat(content.fileSize) : "—"],
                     ["Uploaded", content.createdAt ? formatDate(content.createdAt) : "—"],
                   ].map(([label, value]) => (
                     <div key={label as string} className="flex justify-between py-1.5 border-b border-zinc-100">
