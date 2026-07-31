@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, handleAuthError } from "@/lib/auth";
 
+const MAX_UPLOAD_SIZE = 200 * 1024 * 1024; // 200MB
+const MAX_CHUNK_SIZE = 4.5 * 1024 * 1024; // 4.5MB — Vercel function request body limit
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -68,69 +71,115 @@ export async function POST(
       );
     }
 
+    // Chunked upload: the client sends the file in small pieces (under 4.5MB)
+    // to stay within Vercel's serverless function request body limit. Each
+    // chunk is appended to the fileData bytes stored in the database.
     const formData = await request.formData();
-    const file = formData.get("file") as File | null;
-    const fileType = (formData.get("type") as string) || "main";
-    const fileOrder = parseInt(formData.get("order") as string) || 0;
+    const chunk = formData.get("chunk") as File | null;
+    const chunkIndex = parseInt(formData.get("chunkIndex") as string) || 0;
+    const totalChunks = parseInt(formData.get("totalChunks") as string) || 1;
+    const filename = (formData.get("filename") as string) || "file";
+    const mimeType = (formData.get("mimeType") as string) || "application/octet-stream";
+    const type = (formData.get("type") as string) || "main";
+    const fileId = (formData.get("fileId") as string) || null;
 
-    if (!file) {
+    if (!chunk || chunk.size === 0) {
       return NextResponse.json(
-        { message: "No file provided" },
+        { message: "No file chunk provided" },
         { status: 400 }
       );
     }
 
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024;
-    if (file.size > maxSize) {
+    if (chunk.size > MAX_CHUNK_SIZE) {
       return NextResponse.json(
-        { message: "File too large. Maximum size is 50MB" },
+        { message: "Chunk too large" },
         { status: 400 }
       );
     }
 
-    // Get the max order for this content
-    const maxOrder = await prisma.contentFile.aggregate({
-      where: { contentId: content.id },
-      _max: { order: true },
-    });
-    const nextOrder = (maxOrder._max.order ?? -1) + 1;
+    const buffer = Buffer.from(await chunk.arrayBuffer());
 
-    // Read file buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    // First chunk: create the record. Subsequent chunks: append to it.
+    let contentFile;
+    if (chunkIndex === 0) {
+      // Get the max order for this content
+      const maxOrder = await prisma.contentFile.aggregate({
+        where: { contentId: content.id },
+        _max: { order: true },
+      });
+      const nextOrder = (maxOrder._max.order ?? -1) + 1;
 
-    // Create database record with file data stored in DB
-    const contentFile = await prisma.contentFile.create({
-      data: {
-        contentId: content.id,
-        filename: file.name,
-        url: "pending", // Will be updated with actual file ID
-        size: file.size,
-        mimeType: file.type || "application/octet-stream",
-        type: fileType,
-        order: fileOrder || nextOrder,
-        fileData: buffer, // Store binary data in database
-      },
-    });
+      contentFile = await prisma.contentFile.create({
+        data: {
+          contentId: content.id,
+          filename,
+          url: "pending",
+          size: buffer.length,
+          mimeType,
+          type,
+          order: nextOrder,
+          fileData: buffer,
+        },
+      });
+    } else {
+      if (!fileId) {
+        return NextResponse.json(
+          { message: "Missing fileId for continuation chunk" },
+          { status: 400 }
+        );
+      }
 
-    // Update URL with the actual file ID
-    const finalFile = await prisma.contentFile.update({
-      where: { id: contentFile.id },
-      data: { url: `/api/files/${contentFile.id}/download` },
-    });
+      const existing = await prisma.contentFile.findFirst({
+        where: { id: fileId, contentId: content.id },
+      });
+      if (!existing) {
+        return NextResponse.json(
+          { message: "File not found" },
+          { status: 404 }
+        );
+      }
+
+      const combined = Buffer.concat([
+        Buffer.from(existing.fileData || Buffer.alloc(0)),
+        buffer,
+      ]);
+
+      if (combined.length > MAX_UPLOAD_SIZE) {
+        return NextResponse.json(
+          { message: "File too large. Maximum size is 200MB" },
+          { status: 400 }
+        );
+      }
+
+      contentFile = await prisma.contentFile.update({
+        where: { id: existing.id },
+        data: {
+          fileData: combined,
+          size: combined.length,
+        },
+      });
+    }
+
+    // Final chunk: finalize the download URL
+    if (chunkIndex >= totalChunks - 1) {
+      contentFile = await prisma.contentFile.update({
+        where: { id: contentFile.id },
+        data: { url: `/api/files/${contentFile.id}/download` },
+      });
+    }
 
     return NextResponse.json(
       {
         success: true,
         data: {
-          id: finalFile.id,
-          contentId: finalFile.contentId,
-          filename: finalFile.filename,
-          url: finalFile.url,
-          size: finalFile.size,
-          mimeType: finalFile.mimeType,
-          type: finalFile.type,
-          order: finalFile.order,
+          id: contentFile.id,
+          contentId: contentFile.contentId,
+          filename: contentFile.filename,
+          url: contentFile.url,
+          size: contentFile.size,
+          mimeType: contentFile.mimeType,
+          type: contentFile.type,
+          order: contentFile.order,
         },
       },
       { status: 201 }

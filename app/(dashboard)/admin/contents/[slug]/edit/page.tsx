@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { contentSchema, type ContentInput } from "@/lib/validations";
 import { slugify, fileSizeFormat } from "@/lib/utils";
+import { uploadFileInChunks } from "@/lib/chunked-upload";
 import { toast } from "sonner";
 
 const contentTypeLabels: Record<string, string> = {
@@ -61,6 +62,7 @@ export default function EditContentPage() {
   // File management
   const [contentFiles, setContentFiles] = useState<any[]>([]);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [coverImage, setCoverImage] = useState("");
   const [coverVideo, setCoverVideo] = useState("");
   const [coverMediaType, setCoverMediaType] = useState<"image" | "video">("image");
@@ -115,26 +117,18 @@ export default function EditContentPage() {
     if (!file) return;
 
     setUploadingFile(true);
+    setUploadProgress(0);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch(`/api/contents/${slug}/files`, {
-        method: "POST",
-        body: formData,
+      await uploadFileInChunks(file, slug, {
+        onProgress: setUploadProgress,
       });
-      const json = await res.json();
-
-      if (json.success) {
-        toast.success(`"${file.name}" uploaded`);
-        fetchContentFiles();
-      } else {
-        toast.error(json.message || "Upload failed");
-      }
-    } catch {
-      toast.error("Failed to upload file");
+      toast.success(`"${file.name}" uploaded`);
+      fetchContentFiles();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload file");
     } finally {
       setUploadingFile(false);
+      setUploadProgress(0);
       e.target.value = "";
     }
   };
@@ -146,23 +140,11 @@ export default function EditContentPage() {
 
     setUploadingCoverImage(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch(`/api/contents/${slug}/files`, {
-        method: "POST",
-        body: formData,
-      });
-      const json = await res.json();
-
-      if (json.success) {
-        setCoverImage(json.data.url);
-        toast.success("Cover image uploaded");
-      } else {
-        toast.error(json.message || "Upload failed");
-      }
-    } catch {
-      toast.error("Failed to upload cover image");
+      const uploaded = await uploadFileInChunks(file, slug, { type: "cover" });
+      setCoverImage(uploaded.url);
+      toast.success("Cover image uploaded");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload cover image");
     } finally {
       setUploadingCoverImage(false);
       e.target.value = "";
@@ -176,23 +158,11 @@ export default function EditContentPage() {
 
     setUploadingCoverVideo(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch(`/api/contents/${slug}/files`, {
-        method: "POST",
-        body: formData,
-      });
-      const json = await res.json();
-
-      if (json.success) {
-        setCoverVideo(json.data.url);
-        toast.success("Cover video uploaded");
-      } else {
-        toast.error(json.message || "Upload failed");
-      }
-    } catch {
-      toast.error("Failed to upload cover video");
+      const uploaded = await uploadFileInChunks(file, slug, { type: "cover" });
+      setCoverVideo(uploaded.url);
+      toast.success("Cover video uploaded");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload cover video");
     } finally {
       setUploadingCoverVideo(false);
       e.target.value = "";
@@ -875,7 +845,11 @@ export default function EditContentPage() {
                         ) : (
                           <Upload className="h-4 w-4" />
                         )}
-                        {uploadingFile ? "Uploading..." : "Upload File"}
+                        {uploadingFile
+                          ? uploadProgress > 0
+                            ? `Uploading... ${uploadProgress}%`
+                            : "Uploading..."
+                          : "Upload File"}
                       </span>
                     </Button>
                   </label>
@@ -886,7 +860,7 @@ export default function EditContentPage() {
               {currentFileConfig.hint && (
                 <p className="text-xs text-zinc-400">
                   Accepted formats: <span className="font-medium text-zinc-500">{currentFileConfig.hint}</span>
-                  {" "}· Max 50MB per file
+                  {" "}· Max 200MB per file
                 </p>
               )}
 
