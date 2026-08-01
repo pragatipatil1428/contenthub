@@ -29,6 +29,21 @@ export default function PaymentPage() {
   const [submitted, setSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(1800); // 30 minutes
   const [copied, setCopied] = useState(false);
+  const [upiId, setUpiId] = useState("admin@contenthub");
+  const [receiverName, setReceiverName] = useState("");
+
+  useEffect(() => {
+    // Fetch payment settings (UPI ID, receiver name)
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) {
+          if (json.data?.upi_id) setUpiId(json.data.upi_id);
+          if (json.data?.qr_receiver) setReceiverName(json.data.qr_receiver);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     // Fetch purchase details
@@ -250,12 +265,17 @@ export default function PaymentPage() {
             <div className="space-y-2">
               <Label>UPI ID</Label>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <Input value="admin@contenthub" readOnly className="bg-zinc-50" />
+                <Input value={upiId} readOnly className="bg-zinc-50" />
+                {receiverName && (
+                  <p className="text-sm text-zinc-500 sm:flex-1">
+                    Pay to: <span className="font-medium text-zinc-700">{receiverName}</span>
+                  </p>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
                   className="shrink-0 gap-1"
-                  onClick={() => handleCopy("admin@contenthub")}
+                  onClick={() => handleCopy(upiId)}
                 >
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   {copied ? "Copied" : "Copy"}

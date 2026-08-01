@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -69,12 +69,46 @@ export default function AdminSettingsPage() {
     }
   };
 
+  // Load saved settings on mount
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) {
+          const d = json.data || {};
+          if (d.site_name) setSiteName(d.site_name);
+          if (d.payment_method) setPaymentMethod(d.payment_method);
+          if (d.upi_id) setUpiId(d.upi_id);
+          if (d.qr_receiver) setQReceiver(d.qr_receiver);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const handleSave = async () => {
     setSaving(true);
-    // Simulate saving
-    await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Settings saved successfully");
-    setSaving(false);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          site_name: siteName,
+          payment_method: paymentMethod,
+          upi_id: upiId,
+          qr_receiver: qReceiver,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        toast.success("Settings saved successfully");
+      } else {
+        toast.error(json.message || "Failed to save settings");
+      }
+    } catch {
+      toast.error("Failed to save settings");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
