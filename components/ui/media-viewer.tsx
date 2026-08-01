@@ -35,16 +35,22 @@ function getFileIcon(mimeType?: string | null) {
 }
 
 function getMainMediaFile(files: MediaFile[]): MediaFile | undefined {
-  return files.find((f) => f.type === "main" || f.type === "preview") || files[0];
+  // Cover media is shown via thumbnail/previewVideo props — never treat it
+  // as the main file, otherwise a cover video shows in the cover-image space.
+  const contentFiles = files.filter((f) => f.type !== "cover");
+  return contentFiles.find((f) => f.type === "main" || f.type === "preview") || contentFiles[0];
 }
 
 export function MediaViewer({ contentType, title, thumbnail, previewVideo, files, description }: MediaViewerProps) {
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const mainFile = getMainMediaFile(files);
 
-  const imageFiles = files.filter((f) => f.mimeType?.startsWith("image") && f.url !== thumbnail);
-  const videoFiles = files.filter((f) => f.mimeType?.startsWith("video"));
-  const otherFiles = files.filter((f) => !f.mimeType?.startsWith("image") && !f.mimeType?.startsWith("video"));
+  // Cover media (type "cover") is rendered via the thumbnail/previewVideo props
+  // above — exclude those files so they don't duplicate in the gallery/video sections.
+  const contentFiles = files.filter((f) => f.type !== "cover");
+  const imageFiles = contentFiles.filter((f) => f.mimeType?.startsWith("image") && f.url !== thumbnail);
+  const videoFiles = contentFiles.filter((f) => f.mimeType?.startsWith("video"));
+  const otherFiles = contentFiles.filter((f) => !f.mimeType?.startsWith("image") && !f.mimeType?.startsWith("video"));
 
   const renderCoverMedia = () => {
     // 1. Preview video always takes priority as hero
@@ -77,66 +83,30 @@ export function MediaViewer({ contentType, title, thumbnail, previewVideo, files
       );
     }
 
-    // 3. Fallback: first main file
-    if (mainFile) {
-      if (contentType === "VIDEO") {
-        return (
-          <div className="aspect-video rounded-2xl overflow-hidden bg-black shadow-lg">
-            <video controls className="h-full w-full">
-              <source src={mainFile.url} type={mainFile.mimeType || "video/mp4"} />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        );
-      }
-      if (contentType === "AUDIO") {
-        return (
-          <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100 p-6 sm:p-8 space-y-4 shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Music className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">{title}</h3>
-                <p className="text-sm text-zinc-500">{mainFile.filename}</p>
-              </div>
-            </div>
-            <audio controls className="w-full">
-              <source src={mainFile.url} type={mainFile.mimeType || "audio/mpeg"} />
-              Your browser does not support the audio tag.
-            </audio>
-          </div>
-        );
-      }
-      if (contentType === "PDF") {
-        return (
-          <div className="aspect-video rounded-2xl overflow-hidden bg-zinc-100 shadow-lg">
-            <iframe src={mainFile.url} className="h-full w-full" title={title} />
-          </div>
-        );
-      }
-      // IMAGE or default — show main file with lightbox
+    // 3. No cover media set — keep the audio player for AUDIO content only.
+    //    For everything else, don't show any video/image above the description.
+    if (contentType === "AUDIO" && mainFile) {
       return (
-        <div className="rounded-2xl overflow-hidden bg-zinc-100 shadow-lg">
-          <img
-            src={mainFile.url}
-            alt={title}
-            className="w-full h-auto max-h-[60vh] object-contain mx-auto cursor-pointer transition-opacity hover:opacity-95"
-            onClick={() => setLightboxImage(mainFile.url)}
-          />
+        <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100 p-6 sm:p-8 space-y-4 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+              <Music className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">{title}</h3>
+              <p className="text-sm text-zinc-500">{mainFile.filename}</p>
+            </div>
+          </div>
+          <audio controls className="w-full">
+            <source src={mainFile.url} type={mainFile.mimeType || "audio/mpeg"} />
+            Your browser does not support the audio tag.
+          </audio>
         </div>
       );
     }
 
-    // 4. Nothing at all
-    return (
-      <div className="aspect-video rounded-2xl bg-zinc-100 flex items-center justify-center">
-        <div className="text-center">
-          <FileText className="mx-auto h-16 w-16 text-zinc-300" />
-          <p className="mt-2 text-sm text-zinc-400">No preview available</p>
-        </div>
-      </div>
-    );
+    // 4. No cover media — render nothing above the description
+    return null;
   };
 
   return (
@@ -256,7 +226,7 @@ export function MediaViewer({ contentType, title, thumbnail, previewVideo, files
       )}
 
       {/* No files message */}
-      {files.length === 0 && (
+      {contentFiles.length === 0 && (
         <div className="text-center py-12 rounded-xl border-2 border-dashed border-zinc-200">
           <Download className="mx-auto h-12 w-12 text-zinc-300" />
           <p className="mt-3 text-sm text-zinc-500">No files available yet</p>

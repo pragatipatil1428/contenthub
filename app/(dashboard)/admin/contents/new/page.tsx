@@ -56,6 +56,8 @@ export default function NewContentPage() {
   const [coverMediaType, setCoverMediaType] = useState<"image" | "video">("image");
   const [uploadingCoverImage, setUploadingCoverImage] = useState(false);
   const [uploadingCoverVideo, setUploadingCoverVideo] = useState(false);
+  const [coverImageFileId, setCoverImageFileId] = useState<string | null>(null);
+  const [coverVideoFileId, setCoverVideoFileId] = useState<string | null>(null);
   const [autoSlug, setAutoSlug] = useState(true);
   const [customSlug, setCustomSlug] = useState("");
   const [savedContentSlug, setSavedContentSlug] = useState<string | null>(null);
@@ -173,7 +175,15 @@ export default function NewContentPage() {
     try {
       const slug = await ensureContentExists();
       const uploaded = await uploadFileInChunks(file, slug, { type: "cover" });
+      // Remove the previous cover file record (if any) so it doesn't linger —
+      // only after the new upload succeeds, to avoid losing the cover on failure
+      if (coverImageFileId) {
+        try {
+          await fetch(`/api/contents/${slug}/files?id=${coverImageFileId}`, { method: "DELETE" });
+        } catch { /* ignore */ }
+      }
       setCoverImage(uploaded.url);
+      setCoverImageFileId(uploaded.id);
       toast.success("Cover image uploaded");
     } catch (err: any) {
       toast.error(err.message || "Failed to upload cover image");
@@ -181,6 +191,18 @@ export default function NewContentPage() {
       setUploadingCoverImage(false);
       e.target.value = "";
     }
+  };
+
+  // Remove cover image and its stored file record
+  const handleRemoveCoverImage = async () => {
+    if (coverImageFileId) {
+      const slug = savedContentSlug || customSlug || slugify(watchTitle || "untitled");
+      try {
+        await fetch(`/api/contents/${slug}/files?id=${coverImageFileId}`, { method: "DELETE" });
+      } catch { /* ignore */ }
+    }
+    setCoverImageFileId(null);
+    setCoverImage("");
   };
 
   // Handle cover video upload
@@ -192,7 +214,15 @@ export default function NewContentPage() {
     try {
       const slug = await ensureContentExists();
       const uploaded = await uploadFileInChunks(file, slug, { type: "cover" });
+      // Remove the previous cover file record (if any) so it doesn't linger —
+      // only after the new upload succeeds, to avoid losing the cover on failure
+      if (coverVideoFileId) {
+        try {
+          await fetch(`/api/contents/${slug}/files?id=${coverVideoFileId}`, { method: "DELETE" });
+        } catch { /* ignore */ }
+      }
       setCoverVideo(uploaded.url);
+      setCoverVideoFileId(uploaded.id);
       toast.success("Cover video uploaded");
     } catch (err: any) {
       toast.error(err.message || "Failed to upload cover video");
@@ -200,6 +230,18 @@ export default function NewContentPage() {
       setUploadingCoverVideo(false);
       e.target.value = "";
     }
+  };
+
+  // Remove cover video and its stored file record
+  const handleRemoveCoverVideo = async () => {
+    if (coverVideoFileId) {
+      const slug = savedContentSlug || customSlug || slugify(watchTitle || "untitled");
+      try {
+        await fetch(`/api/contents/${slug}/files?id=${coverVideoFileId}`, { method: "DELETE" });
+      } catch { /* ignore */ }
+    }
+    setCoverVideoFileId(null);
+    setCoverVideo("");
   };
 
   // Handle file delete
@@ -222,13 +264,14 @@ export default function NewContentPage() {
     }
   };
 
-  // Fetch content files
+  // Fetch content files (cover-type records are managed via Cover Media, so
+  // they are excluded from the uploaded-files list)
   const fetchContentFiles = async () => {
     const slug = savedContentSlug || customSlug || slugify(watchTitle || "untitled");
     try {
       const res = await fetch(`/api/contents/${slug}/files`);
       const json = await res.json();
-      if (json.success) setContentFiles(json.data);
+      if (json.success) setContentFiles(json.data.filter((f: any) => f.type !== "cover"));
     } catch {
       console.error("Failed to fetch files");
     }
@@ -620,7 +663,7 @@ export default function NewContentPage() {
                       <button
                         type="button"
                         className="absolute top-2 right-2 h-7 w-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
-                        onClick={() => setCoverImage("")}
+                        onClick={handleRemoveCoverImage}
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -681,7 +724,7 @@ export default function NewContentPage() {
                       <button
                         type="button"
                         className="absolute top-2 right-2 h-7 w-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
-                        onClick={() => setCoverVideo("")}
+                        onClick={handleRemoveCoverVideo}
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
