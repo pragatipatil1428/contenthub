@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
               id: true,
               status: true,
               transactionId: true,
+              paymentNote: true,
               screenshots: { select: { id: true, url: true } },
               createdAt: true,
             },

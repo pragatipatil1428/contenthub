@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSession, requireAuth, requireAdmin, handleAuthError } from "@/lib/auth";
+import { requireAuth, requireAdmin, handleAuthError } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,19 +27,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (purchase.userId !== session.userId) {
+    if (purchase.userId !== session.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Snapshot the QR payment details shown to the buyer at payment time
+    const settings = await prisma.setting.findMany({
+      where: { key: { in: ["upi_id", "qr_receiver", "qr_image"] } },
+    });
+    const settingMap: Record<string, string> = {};
+    for (const setting of settings) {
+      settingMap[setting.key] = setting.value;
     }
 
     // Create QR payment record
     const qrPayment = await prisma.qRPayment.create({
       data: {
         purchaseId,
-        userId: session.userId,
+        userId: session.id,
         amount: purchase.finalAmount,
         transactionId,
         paymentNote,
         status: "PENDING",
+        upiId: settingMap.upi_id || "admin@contenthub",
+        receiverName: settingMap.qr_receiver || null,
+        qrImage: settingMap.qr_image || null,
       },
     });
 

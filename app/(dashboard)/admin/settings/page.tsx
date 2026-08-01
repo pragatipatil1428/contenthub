@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Save, User } from "lucide-react";
+import { Loader2, Save, User, QrCode, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { profileSchema, type ProfileInput } from "@/lib/validations";
 import { useAuthStore } from "@/store";
@@ -31,6 +31,8 @@ export default function AdminSettingsPage() {
   const [paymentMethod, setPaymentMethod] = useState("QR_CODE");
   const [upiId, setUpiId] = useState("admin@contenthub");
   const [qReceiver, setQReceiver] = useState("ContentHub Admin");
+  const [qrImage, setQrImage] = useState("");
+  const [qrImageLoading, setQrImageLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
 
@@ -80,10 +82,61 @@ export default function AdminSettingsPage() {
           if (d.payment_method) setPaymentMethod(d.payment_method);
           if (d.upi_id) setUpiId(d.upi_id);
           if (d.qr_receiver) setQReceiver(d.qr_receiver);
+          if (d.qr_image) setQrImage(d.qr_image);
         }
       })
       .catch(console.error);
   }, []);
+
+  const handleQrImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    setQrImageLoading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        // Downscale to a max of 512px so the settings payload stays small
+        const maxSize = 512;
+        let { width, height } = img;
+        if (width > maxSize || height > maxSize) {
+          const ratio = maxSize / Math.max(width, height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          setQrImageLoading(false);
+          toast.error("Failed to process image");
+          return;
+        }
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        setQrImage(canvas.toDataURL("image/png"));
+        setQrImageLoading(false);
+        toast.success("QR image added — save settings to apply");
+      };
+      img.onerror = () => {
+        setQrImageLoading(false);
+        toast.error("Failed to read image");
+      };
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => {
+      setQrImageLoading(false);
+      toast.error("Failed to read file");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -96,6 +149,7 @@ export default function AdminSettingsPage() {
           payment_method: paymentMethod,
           upi_id: upiId,
           qr_receiver: qReceiver,
+          qr_image: qrImage,
         }),
       });
       const json = await res.json();
@@ -247,6 +301,53 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setQReceiver(e.target.value)}
                   placeholder="Receiver name"
                 />
+              </div>
+              <div>
+                <Label htmlFor="qrImage">QR Code Image (optional)</Label>
+                <p className="text-xs text-zinc-500 mb-2">
+                  Upload a custom QR image to show on the payment page. If left empty, a QR code
+                  is generated automatically from your UPI ID.
+                </p>
+                <div className="flex items-start gap-4">
+                  {qrImage ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={qrImage}
+                        alt="QR code preview"
+                        className="h-24 w-24 rounded-lg border border-zinc-200 bg-white object-contain p-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setQrImage("")}
+                        className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow hover:bg-red-600"
+                        title="Remove QR image"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 text-zinc-400">
+                      {qrImageLoading ? (
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                      ) : (
+                        <QrCode className="h-8 w-8" />
+                      )}
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Input
+                      id="qrImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleQrImageUpload}
+                      disabled={qrImageLoading}
+                      className="max-w-xs"
+                    />
+                    <p className="text-xs text-zinc-500">
+                      PNG or JPG. Shown to buyers so they can scan and pay.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

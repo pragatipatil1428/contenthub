@@ -8,6 +8,7 @@ const ALLOWED_KEYS = [
   "payment_method",
   "upi_id",
   "qr_receiver",
+  "qr_image",
   "currency",
   "tax_percentage",
 ];

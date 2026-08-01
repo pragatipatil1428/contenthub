@@ -10,7 +10,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate, formatPrice } from "@/lib/utils";
+import { formatDateTime, formatPrice } from "@/lib/utils";
 
 const contentTypeIcons: Record<string, any> = {
   IMAGE: Image,
@@ -176,7 +176,7 @@ export default function PurchasesPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-zinc-500 whitespace-nowrap hidden sm:table-cell">
-                          {formatDate(purchase.createdAt)}
+                          {formatDateTime(purchase.createdAt)}
                         </TableCell>
                         <TableCell className="font-medium whitespace-nowrap">
                           {formatPrice(purchase.finalAmount)}

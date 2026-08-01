@@ -260,6 +260,14 @@ export default function AdminPurchasesPage() {
                           {qrPending && (
                             <span className="ml-1 text-amber-600 font-medium">(QR)</span>
                           )}
+                          {purchase.qrPayment?.transactionId && (
+                            <div
+                              className="mt-1 font-mono text-[11px] text-zinc-600 truncate max-w-[150px]"
+                              title={`TXN: ${purchase.qrPayment.transactionId}${purchase.qrPayment.paymentNote ? ` — Note: ${purchase.qrPayment.paymentNote}` : ""}`}
+                            >
+                              TXN: {purchase.qrPayment.transactionId}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell className="text-xs text-zinc-500 whitespace-nowrap hidden md:table-cell">
                           {formatDateTime(purchase.createdAt)}

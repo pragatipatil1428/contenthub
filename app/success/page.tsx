@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MediaViewer } from "@/components/ui/media-viewer";
-import { formatPrice, formatDate, formatDateTime } from "@/lib/utils";
+import { formatPrice, formatDateTime } from "@/lib/utils";
 
 // ─── Animation variants ───────────────────────────────────────────────
 const containerVariants = {
@@ -403,7 +403,7 @@ function SuccessPageContent() {
                 {purchase.qrPayment.approvedAt && (
                   <div className="flex justify-between py-2 border-b border-zinc-100">
                     <span className="text-zinc-500">Approved At</span>
-                    <span className="font-medium">{formatDate(purchase.qrPayment.approvedAt)}</span>
+                    <span className="font-medium">{formatDateTime(purchase.qrPayment.approvedAt)}</span>
                   </div>
                 )}
                 <div className="flex justify-between py-2">

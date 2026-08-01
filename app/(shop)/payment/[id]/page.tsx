@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import QRCode from "react-qr-code";
 import {
   QrCode, Copy, Clock, Upload, Check,
-  Loader2, ArrowLeft, CheckCircle,
+  Loader2, ArrowLeft, CheckCircle, XCircle,
   LayoutDashboard, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,33 +32,72 @@ export default function PaymentPage() {
   const [copied, setCopied] = useState(false);
   const [upiId, setUpiId] = useState("admin@contenthub");
   const [receiverName, setReceiverName] = useState("");
+  const [qrImage, setQrImage] = useState("");
 
   useEffect(() => {
-    // Fetch payment settings (UPI ID, receiver name)
+    // Fetch payment settings (UPI ID, receiver name, custom QR image)
     fetch("/api/settings")
       .then((r) => r.json())
       .then((json) => {
         if (json.success) {
           if (json.data?.upi_id) setUpiId(json.data.upi_id);
           if (json.data?.qr_receiver) setReceiverName(json.data.qr_receiver);
+          if (json.data?.qr_image) setQrImage(json.data.qr_image);
         }
       })
       .catch(console.error);
   }, []);
 
+  const isApprovedStatus = (status?: string) =>
+    status === "APPROVED" || status === "SUCCESS";
+  const isRejectedStatus = (status?: string) =>
+    status === "REJECTED" || status === "FAILED" || status === "REFUNDED";
+
+  // Fetch purchase details and redirect to success page if already approved
   useEffect(() => {
-    // Fetch purchase details
-    fetch(`/api/purchases`)
+    fetch(`/api/purchases/${params.id}`)
       .then((r) => r.json())
       .then((json) => {
-        if (json.success) {
-          const found = json.data.find((p: any) => p.id === params.id);
-          setPurchase(found);
+        if (json.success && json.data) {
+          setPurchase(json.data);
+          if (isApprovedStatus(json.data.paymentStatus)) {
+            router.replace(`/success?purchaseId=${json.data.id}`);
+          } else if (isRejectedStatus(json.data.paymentStatus)) {
+            // Show the rejection screen instead of the payment form
+            setSubmitted(true);
+          } else if (json.data.qrPayment && json.data.paymentStatus === "PENDING") {
+            // Already submitted and awaiting approval — show pending screen
+            // (starts the poll, which redirects to /success once approved)
+            setSubmitted(true);
+          }
         }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [params.id]);
+
+  // While payment is pending approval, poll for status changes and
+  // redirect to the success page the moment the admin approves.
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/purchases/${params.id}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          setPurchase(json.data);
+          if (isApprovedStatus(json.data.paymentStatus)) {
+            router.replace(`/success?purchaseId=${json.data.id}`);
+          } else if (isRejectedStatus(json.data.paymentStatus)) {
+            clearInterval(timer); // terminal state — stop polling
+          }
+        }
+      } catch {
+        // ignore polling errors — retry on next tick
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [submitted, params.id]);
 
   // Countdown timer
   useEffect(() => {
@@ -71,6 +111,15 @@ export default function PaymentPage() {
     const s = seconds % 60;
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
+
+  // Standard UPI deep link — scannable by all UPI apps (GPay, PhonePe, Paytm, etc.)
+  const upiDeepLink = purchase
+    ? `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(
+        receiverName || ""
+      )}&am=${purchase.finalAmount}&cu=INR&tn=${encodeURIComponent(
+        `Order ${purchase.orderNumber}`
+      )}`
+    : "";
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -131,6 +180,7 @@ export default function PaymentPage() {
 
   // Submitted state — show confirmation on this page
   if (submitted) {
+    const isRejected = isRejectedStatus(purchase?.paymentStatus);
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -138,21 +188,50 @@ export default function PaymentPage() {
         className="mx-auto max-w-lg px-4 py-12"
       >
         <Card className="border-0 shadow-xl overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-emerald-400 to-teal-500" />
+          <div
+            className={`h-2 ${isRejected
+              ? "bg-gradient-to-r from-red-400 to-rose-500"
+              : "bg-gradient-to-r from-emerald-400 to-teal-500"}`}
+          />
           <CardContent className="p-8 sm:p-10 text-center space-y-6">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/50">
-              <CheckCircle className="h-10 w-10 text-emerald-500" />
+            <div
+              className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ring-8 ${isRejected
+                ? "bg-red-50 ring-red-50/50"
+                : "bg-emerald-50 ring-emerald-50/50"}`}
+            >
+              {isRejected ? (
+                <XCircle className="h-10 w-10 text-red-500" />
+              ) : (
+                <CheckCircle className="h-10 w-10 text-emerald-500" />
+              )}
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">Payment Submitted!</h1>
+              <h1 className="text-2xl font-bold">
+                {isRejected ? "Payment Not Approved" : "Payment Submitted!"}
+              </h1>
               <p className="text-zinc-500 text-sm">
-                Your payment for <strong>{purchase.items?.[0]?.content?.title}</strong> has been received.
-                An admin will review and approve it shortly.
+                {isRejected ? (
+                  <>
+                    We couldn&apos;t verify your payment for{" "}
+                    <strong>{purchase.items?.[0]?.content?.title}</strong>.
+                    Please contact support or try again.
+                  </>
+                ) : (
+                  <>
+                    Your payment for{" "}
+                    <strong>{purchase.items?.[0]?.content?.title}</strong> has been received.
+                    An admin will review and approve it shortly.
+                  </>
+                )}
               </p>
             </div>
 
-            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-left space-y-2">
+            <div
+              className={`rounded-xl border p-4 text-left space-y-2 ${isRejected
+                ? "bg-red-50 border-red-200"
+                : "bg-amber-50 border-amber-200"}`}
+            >
               <div className="flex justify-between text-sm">
                 <span className="text-zinc-500">Order Number</span>
                 <span className="font-medium">{purchase.orderNumber}</span>
@@ -163,20 +242,37 @@ export default function PaymentPage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-zinc-500">Status</span>
-                <Badge variant="warning" className="text-xs">Pending Approval</Badge>
+                <Badge
+                  variant={isRejected ? "destructive" : "warning"}
+                  className="text-xs"
+                >
+                  {isRejected ? "Rejected" : "Pending Approval"}
+                </Badge>
               </div>
-              {transactionId && (
+              {(transactionId || purchase.qrPayment?.transactionId) && (
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-500">Transaction ID</span>
-                  <span className="font-mono text-xs">{transactionId}</span>
+                  <span className="font-mono text-xs">
+                    {transactionId || purchase.qrPayment?.transactionId}
+                  </span>
+                </div>
+              )}
+              {isRejected && purchase.qrPayment?.adminNote && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-500">Admin Note</span>
+                  <span className="font-medium text-zinc-700 max-w-[60%] text-right">
+                    {purchase.qrPayment.adminNote}
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-xs text-amber-600">
-              <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              Typically reviewed within 24 hours
-            </div>
+            {!isRejected && (
+              <div className="flex items-center justify-center gap-2 text-xs text-amber-600">
+                <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                Typically reviewed within 24 hours
+              </div>
+            )}
 
             <div className="flex flex-col gap-3 pt-2">
               <Link href="/dashboard/purchases">
@@ -245,32 +341,46 @@ export default function PaymentPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* QR Code (placeholder) */}
-            {/* <div className="flex justify-center">
-              <div className="h-48 w-48 rounded-2xl bg-zinc-100 flex items-center justify-center border-2 border-dashed border-zinc-300">
-                <div className="text-center">
-                  <QrCode className="mx-auto h-12 w-12 text-zinc-400" />
-                  <p className="text-xs text-zinc-400 mt-2">QR Code Here</p>
-                </div>
+            {/* QR Code */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="rounded-2xl bg-white p-4 border border-zinc-200 shadow-sm">
+                {qrImage ? (
+                  <img
+                    src={qrImage}
+                    alt="UPI QR code"
+                    className="h-52 w-52 object-contain"
+                  />
+                ) : upiId ? (
+                  <div aria-label="UPI QR code">
+                    <QRCode value={upiDeepLink} size={200} />
+                  </div>
+                ) : (
+                  <div className="flex h-52 w-52 items-center justify-center text-center text-sm text-zinc-400">
+                    Payment details not configured yet. Please contact the seller.
+                  </div>
+                )}
               </div>
-            </div> */}
+              <p className="text-xs text-zinc-500">
+                Scan this QR with any UPI app (Google Pay, PhonePe, Paytm)
+              </p>
+            </div>
 
             {/* Amount */}
             <div className="text-center">
               <p className="text-sm text-zinc-500">Amount to Pay</p>
               <p className="text-3xl font-bold">{formatPrice(purchase.finalAmount)}</p>
+              {receiverName && (
+                <p className="text-sm text-zinc-500 mt-1">
+                  Paying <span className="font-medium text-zinc-700">{receiverName}</span>
+                </p>
+              )}
             </div>
 
-            {/* UPI ID */}
+            {/* UPI ID (fallback) */}
             <div className="space-y-2">
               <Label>UPI ID</Label>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <Input value={upiId} readOnly className="bg-zinc-50" />
-                {receiverName && (
-                  <p className="text-sm text-zinc-500 sm:flex-1">
-                    Pay to: <span className="font-medium text-zinc-700">{receiverName}</span>
-                  </p>
-                )}
+                <Input value={upiId} readOnly className="bg-zinc-50 flex-1" />
                 <Button
                   variant="outline"
                   size="sm"
@@ -286,10 +396,9 @@ export default function PaymentPage() {
             {/* Instructions */}
             <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4">
               <ol className="text-sm text-amber-800 space-y-1.5 list-decimal list-inside">
-                <li>Open any UPI app (Google Pay, PhonePe, Paytm)</li>
-                <li>Scan the QR code or enter the UPI ID</li>
+                <li>Open any UPI app and scan the QR code</li>
                 <li>Pay the exact amount shown above</li>
-                <li>Enter the transaction ID below</li>
+                <li>Enter the transaction ID below to confirm</li>
               </ol>
             </div>
 

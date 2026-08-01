@@ -26,7 +26,7 @@ export async function PUT(
 
     if (action === "approve") {
       // Approve payment
-      await prisma.qrPayment.update({
+      await prisma.qRPayment.update({
         where: { id },
         data: {
           status: "APPROVED",
